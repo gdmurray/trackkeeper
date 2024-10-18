@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - REDIS_URL=${REDIS_URL}
+      - FLOWER_USER=${FLOWER_USER}
+      - FLOWER_PASSWORD=${FLOWER_PASSWORD}
+    depends_on:
+      - redis
+
+  celery_worker:
+    build: .
+    command: celery -A app.core.celery_app worker -Q default,cron_tasks --loglevel=debug
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - FLOWER_USER=${FLOWER_USER}
+      - FLOWER_PASSWORD=${FLOWER_PASSWORD}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+
+  celery_beat:
+    build: .
+    command: celery -A app.core.celery_app beat --loglevel=debug
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - FLOWER_USER=${FLOWER_USER}
+      - FLOWER_PASSWORD=${FLOWER_PASSWORD}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  flower:
+    build: .
+    command: celery -A app.core.celery_app flower --port=5555 --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD} --broker=${REDIS_URL} --broker_api=${REDIS_URL}
+    ports:
+      - "5555:5555"
+    environment:
+      - FLOWER_USER=${FLOWER_USER}
+      - FLOWER_PASSWORD=${FLOWER_PASSWORD}
+      - REDIS_URL=${REDIS_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+    depends_on:
+      - redis
+      - celery_worker
