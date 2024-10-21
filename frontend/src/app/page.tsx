@@ -3,7 +3,6 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import {
   Headphones,
   Music2,
-  CheckCircle,
   ListMusic,
   RefreshCcw,
   Binoculars,

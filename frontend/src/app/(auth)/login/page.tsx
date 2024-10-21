@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,31 +11,44 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Music, AlertCircle } from 'lucide-react'
+import { Music } from 'lucide-react'
 import { SpotifyFilled } from '@ant-design/icons'
+import { useParams, useRouter } from 'next/navigation'
+import { ErrorAlert } from '@/components/error-alert'
+import { scopes } from '@/lib/spotify/client'
 
 export default function Login() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
+  const router = useRouter()
+  const [error, setError] = useState<string | undefined>(undefined)
+  const params = useParams()
 
+  useEffect(() => {
+    setError(undefined)
+  }, [])
+
+  useEffect(() => {
+    const hash = window.location.hash.substring(1)
+    console.log('Hash: ', hash)
+    const searchParams = new URLSearchParams(hash)
+    if (searchParams.get('error')) {
+      const errorDescription = searchParams.get('error_description')
+      const cleanedError = errorDescription?.split('%3A')[0].replace(/\+/g, ' ')
+      setError(cleanedError ?? undefined)
+      // setError(searchParams.get('error'))
+    }
+  }, [params])
   const handleLogin = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'spotify',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          scopes: 'user-library-read user-read-email',
-        },
-      })
-      if (error) throw error
-    } catch (error) {
+    setError(undefined)
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'spotify',
+      options: {
+        redirectTo: `${window.location.origin}/api/auth/callback`,
+        scopes,
+      },
+    })
+    if (error) {
       setError(error.message)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -55,6 +68,7 @@ export default function Login() {
         </CardHeader>
         <CardContent className='space-y-4'>
           <Button
+            type='button'
             variant='outline'
             className='w-full bg-spotify text-white hover:bg-spotify/80'
             onClick={handleLogin}
@@ -62,6 +76,16 @@ export default function Login() {
             <SpotifyFilled className='text-white mr-2' />
             Log in with Spotify
           </Button>
+          {error && (
+            <ErrorAlert
+              message={error}
+              retry={() => {
+                router.push('/login')
+                router.refresh()
+              }}
+              retryText='Reload'
+            />
+          )}
         </CardContent>
         <CardFooter>
           <p className='text-xs text-center text-muted-foreground w-full'>
@@ -69,13 +93,6 @@ export default function Login() {
           </p>
         </CardFooter>
       </Card>
-      {error && (
-        <Alert variant='destructive' className='mt-4 max-w-md'>
-          <AlertCircle className='h-4 w-4' />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
     </div>
   )
 }

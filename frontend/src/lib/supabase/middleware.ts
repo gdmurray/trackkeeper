@@ -41,9 +41,10 @@ export async function updateSession(request: NextRequest) {
   // console.log('SESSION: ', session)
   const isHomePage =
     request.nextUrl.pathname === '/' || request.nextUrl.pathname === ''
+
   const isAuthPage =
     request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/auth') ||
+    request.nextUrl.pathname.startsWith('/api/auth') ||
     request.nextUrl.pathname.startsWith('/signup')
 
   // console.log('Is Home Page: ', isHomePage)

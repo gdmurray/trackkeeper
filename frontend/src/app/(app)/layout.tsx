@@ -18,8 +18,8 @@ export default async function DashboardLayout({
 
   return (
     <UserProvider initialUser={user}>
-      <div className='min-h-screen flex flex-col'>
-        <header className='border-b'>
+      <div className='min-h-screen flex flex-col bg-secondary/10'>
+        <header className='border-b bg-background'>
           <div className='container mx-auto px-4 py-4 flex justify-between items-center'>
             <Link href='/dashboard' className='flex items-center space-x-2'>
               <Music className='h-6 w-6 text-spotify' />
