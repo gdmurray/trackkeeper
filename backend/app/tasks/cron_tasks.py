@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta, timezone
 from math import ceil
 import typing_extensions
+from typing import List
+
 from app.core.celery_app import celery_app
 from app.db.supabase import supabase
 from app.tasks.take_snapshot import take_snapshot
-from typing import List
-
-
+from app.tasks.suggestion_email import send_suggestion_email
 
 
 class TrackedPlaylist(typing_extensions.TypedDict):
@@ -76,3 +76,16 @@ def queue_user_tasks():
 
     end_time = start_time + timedelta(seconds=(num_subsets - 1) * SUBSET_WINDOW.total_seconds())
     return f"Queued tasks for {total_users} users. Execution will be from {start_time} to {end_time}"
+
+@celery_app.task
+def weekly_suggestions():
+    user_settings = supabase.table('User Settings').select('user_id, suggestion_emails').eq('suggestion_emails', True).execute()
+    if not user_settings or not user_settings.data:
+        print("Error Fetching User Settings. Task ended.")
+        return
+    
+    active_users = [setting['user_id'] for setting in user_settings.data]
+
+    for user_id in active_users:
+        send_suggestion_email.apply_async(args=[user_id])
+

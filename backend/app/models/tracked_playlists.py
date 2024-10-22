@@ -10,6 +10,7 @@ class TrackedPlaylist(Base):
     playlist_name: str
     public: bool
     removed_playlist_id: Optional[str] = None
+    removed_playlist_name: Optional[str] = None
     removed_at: Optional[datetime] = None
     user_id: str
 

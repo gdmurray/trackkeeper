@@ -26,11 +26,11 @@ import {
   SelectTrigger,
 } from '../ui/select'
 import { FolderLock, Globe, Loader2 } from 'lucide-react'
-import Image from 'next/image'
 import { ScrollArea } from '../ui/scroll-area'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateTrackedPlaylists } from './actions/updateTrackedPlaylists'
 import { ErrorAlert } from '../error-alert'
+
 type TrackedPlaylistsProps = {
   settings: SettingsResponse
   playlists: PlaylistResponse
@@ -107,11 +107,6 @@ export function TrackedPlaylists({
       })
   }, [trackedPlaylists, playlists])
 
-  console.log(
-    'Sorted Playlists: ',
-    sortedPlaylists.map((p) => p.id)
-  )
-
   return (
     <Card className='max-w-3xl mx-auto'>
       <CardHeader>
@@ -168,7 +163,7 @@ export function TrackedPlaylists({
                         className='flex flex-row items-center space-x-2 justify-between h-[50px]'
                       >
                         <div className='flex flex-row items-center space-x-2'>
-                          <div className='w-8 h-8'>
+                          <div className='w-8 h-8 flex-shrink-0'>
                             {playlistImage && (
                               <img
                                 src={playlistImage.url}
@@ -272,7 +267,7 @@ export function TrackedPlaylists({
                       key={playlist.id}
                       className='flex flex-row items-center space-x-2 h-[50px]'
                     >
-                      <div className='w-8 h-8'>
+                      <div className='w-8 h-8 flex-shrink-0'>
                         {playlistImage && (
                           <img
                             src={playlistImage.url}

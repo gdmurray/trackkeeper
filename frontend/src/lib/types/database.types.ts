@@ -9,13 +9,46 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      "Cached Tracks": {
+        Row: {
+          album: string | null
+          artist: string | null
+          created_at: string
+          id: number
+          image: string | null
+          name: string | null
+          track_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          album?: string | null
+          artist?: string | null
+          created_at?: string
+          id?: number
+          image?: string | null
+          name?: string | null
+          track_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          album?: string | null
+          artist?: string | null
+          created_at?: string
+          id?: number
+          image?: string | null
+          name?: string | null
+          track_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       "Deleted Songs": {
         Row: {
           created_at: string
           id: number
           playlist_id: number
           removed_at: string
-          track_id: string
+          track_id: string | null
           user_id: string
         }
         Insert: {
@@ -23,7 +56,7 @@ export type Database = {
           id?: number
           playlist_id: number
           removed_at: string
-          track_id: string
+          track_id?: string | null
           user_id: string
         }
         Update: {
@@ -31,7 +64,7 @@ export type Database = {
           id?: number
           playlist_id?: number
           removed_at?: string
-          track_id?: string
+          track_id?: string | null
           user_id?: string
         }
         Relationships: [
@@ -41,6 +74,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "Tracked Playlists"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Deleted Songs_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "Cached Tracks"
+            referencedColumns: ["track_id"]
           },
         ]
       }
@@ -151,6 +191,7 @@ export type Database = {
           id: number
           playlist_persistence: string
           snapshots_enabled: boolean
+          suggestion_emails: boolean
           user_id: string | null
         }
         Insert: {
@@ -158,6 +199,7 @@ export type Database = {
           id?: number
           playlist_persistence?: string
           snapshots_enabled?: boolean
+          suggestion_emails?: boolean
           user_id?: string | null
         }
         Update: {
@@ -165,6 +207,7 @@ export type Database = {
           id?: number
           playlist_persistence?: string
           snapshots_enabled?: boolean
+          suggestion_emails?: boolean
           user_id?: string | null
         }
         Relationships: []

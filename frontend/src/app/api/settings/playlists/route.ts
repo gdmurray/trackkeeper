@@ -53,7 +53,7 @@ export async function GET() {
     id: 'liked_songs',
     name: 'Liked Songs',
     collaborative: false,
-    images: [],
+    images: [{ url: '/liked-songs-logo.png', width: 60 }],
     owner: {
       id: spotifyId,
       external_urls: {

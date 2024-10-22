@@ -48,14 +48,16 @@ export const UserDropdown = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link className='justify-between' href='/settings'>
+          <Link className='justify-between' href='/settings/general'>
             Settings
             <Cog className='w-4 h-4' />
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSignout} className='justify-between'>
-          Sign Out
-          <LogOut className='w-4 h-4 ml-2' />
+        <DropdownMenuItem asChild>
+          <Link className='justify-between' href='/logout'>
+            Sign Out
+            <LogOut className='w-4 h-4 ml-2' />
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

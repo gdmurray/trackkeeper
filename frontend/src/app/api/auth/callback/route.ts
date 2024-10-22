@@ -26,12 +26,17 @@ export async function GET(request: Request) {
         const expiresAt = new Date(Date.now() + 3600000).toISOString() // 3600000 ms = 1 hour
         const { error: insertError } = await supabase
           .from('Spotify Access')
-          .insert({
-            user_id: user.id,
-            access_token: provider_token,
-            refresh_token: provider_refresh_token,
-            expires_at: expiresAt,
-          })
+          .upsert(
+            {
+              user_id: user.id,
+              access_token: provider_token,
+              refresh_token: provider_refresh_token,
+              expires_at: expiresAt,
+            },
+            {
+              onConflict: 'user_id',
+            }
+          )
         if (insertError) {
           console.error('Error inserting Spotify Access token:', insertError)
         }
@@ -80,7 +85,6 @@ export async function GET(request: Request) {
             .insert({
               user_id: user.id,
               playlist_name: 'Liked Songs',
-              removed_playlist_name: 'Recently Removed',
               playlist_id: 'liked_songs',
               liked_songs: true,
               active: true,

@@ -15,6 +15,7 @@ import { BookOpen } from 'lucide-react'
 import dayjs from 'dayjs'
 import { ErrorAlert } from '../error-alert'
 import { SnapshotsResponse } from '@/app/api/snapshots/route'
+import Link from 'next/link'
 
 async function fetchSnapshots(): Promise<SnapshotsResponse> {
   const res = await fetch('/api/snapshots')
@@ -47,47 +48,55 @@ export function Snapshots() {
 
   const { data } = snapshots
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Snapshots</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Number of Songs</TableHead>
-              <TableHead>Playlist Name</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((snapshot) => (
-              <TableRow key={snapshot.id}>
-                <TableCell>
+    <SnapshotsCard>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead>Playlist Name</TableHead>
+            <TableHead>Number of Songs</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((snapshot) => (
+            <TableRow key={snapshot.id}>
+              <TableCell>
+                <Link
+                  href={`/snapshot/${snapshot.id}`}
+                  className='hover:underline'
+                >
                   {dayjs(snapshot.created_at).format('MMM D, YYYY h:mm A')}
-                </TableCell>
-                <TableCell>{snapshot.song_count}</TableCell>
-                <TableCell>{snapshot.playlist_name}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                </Link>
+              </TableCell>
+              <TableCell>{snapshot.tracked_playlist.playlist_name}</TableCell>
+              <TableCell>{snapshot.song_count}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </SnapshotsCard>
   )
 }
 
 function EmptyState() {
+  return (
+    <SnapshotsCard>
+      <BookOpen className='h-12 w-12 text-muted-foreground' />
+      <p className='text-center text-muted-foreground'>
+        No snapshots available yet.
+      </p>
+    </SnapshotsCard>
+  )
+}
+
+const SnapshotsCard = ({ children }: { children: React.ReactNode }) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Snapshots</CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col items-center justify-center space-y-4'>
-        <BookOpen className='h-12 w-12 text-muted-foreground' />
-        <p className='text-center text-muted-foreground'>
-          No snapshots available yet.
-        </p>
+        {children}
       </CardContent>
     </Card>
   )
@@ -95,36 +104,31 @@ function EmptyState() {
 
 function SnapshotsSkeleton() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Snapshots</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Number of Songs</TableHead>
-              <TableHead>Playlist Name</TableHead>
+    <SnapshotsCard>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead>Playlist Name</TableHead>
+            <TableHead>Number of Songs</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[...Array(3)].map((_, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <Skeleton className='h-4 w-[100px]' />
+              </TableCell>
+              <TableCell>
+                <Skeleton className='h-4 w-[50px]' />
+              </TableCell>
+              <TableCell>
+                <Skeleton className='h-4 w-[50px]' />
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {[...Array(3)].map((_, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <Skeleton className='h-4 w-[100px]' />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className='h-4 w-[50px]' />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className='h-4 w-[50px]' />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+          ))}
+        </TableBody>
+      </Table>
+    </SnapshotsCard>
   )
 }

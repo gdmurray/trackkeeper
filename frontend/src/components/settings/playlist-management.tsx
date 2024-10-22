@@ -54,7 +54,6 @@ type PlaylistManagementProps = {
 }
 
 export function PlaylistManagement({ settings }: PlaylistManagementProps) {
-  console.log(settings)
   const form = useForm<PlaylistManagementFormValues>({
     resolver: zodResolver(playlistManagementSchema),
     defaultValues: {

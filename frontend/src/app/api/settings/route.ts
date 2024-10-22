@@ -63,7 +63,7 @@ export async function GET() {
     .limit(1)
     .single()
 
-  if (latestSnapshot) {
+  if (latestSnapshotError) {
     console.error(
       'Error fetching latest library snapshot:',
       latestSnapshotError
