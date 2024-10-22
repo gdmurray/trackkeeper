@@ -39,10 +39,5 @@ def send_suggestion_email(user_id: str):
 
 
     deleted_song_ids = [song.track_id for song in deleted_songs]
-    # deleted_song_ids.append('3dcJhWkFg7pW15v9cytbwq')
-    # deleted_song_ids.append('4H8zM0MKfmrEbj2hNeTgTZ')
-    # deleted_song_ids.append('1xmvq1fYLs9TEgikaFilGW')
-    # deleted_song_ids.append('3xkHsmpQCBMytMJNiDf3Ii')
-    # deleted_song_ids.append('5fZJQrFKWQLb7FpJXZ1g7K')
     suggestions = spotify_service.suggest_accidentally_removed_tracks(deleted_song_ids)
     print("Suggestions: ", suggestions)
