@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'backend/**'
+      - '.github/workflows/**'
 
 jobs:
   build-and-push:
@@ -85,6 +86,8 @@ jobs:
             ssh-add ~/.ssh/mma-oracle-github-deploy-key
             git reset --hard HEAD
             git pull origin main
+
+            cd backend
 
             # Pull latest images
             docker-compose -f docker-compose.prod.yml pull
