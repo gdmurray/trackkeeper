@@ -37,13 +37,16 @@ export default function Login() {
       // setError(searchParams.get('error'))
     }
   }, [params])
+
   const handleLogin = async () => {
     setError(undefined)
     const supabase = createClient()
+    const redirectUri = `${window.location.origin}/api/auth/callback`
+    console.log('Redirect URI: ', redirectUri)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'spotify',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: redirectUri,
         scopes,
       },
     })
