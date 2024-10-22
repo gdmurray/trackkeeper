@@ -15,6 +15,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 
 @app.get("/")
 async def root():
+    print("Hello")
     return {"message": "Welcome to the FastAPI server"}
 
 @app.get("/test")
