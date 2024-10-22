@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,36 +13,15 @@ import {
 } from '@/components/ui/card'
 import { Music } from 'lucide-react'
 import { SpotifyFilled } from '@ant-design/icons'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ErrorAlert } from '@/components/error-alert'
 import { scopes } from '@/lib/spotify/client'
 import { getBaseRedirectUri } from '@/lib/get-base-redirect-uri'
+import { AuthErrorHandler } from '@/components/auth/auth-error-handler'
 
 export default function Login() {
   const router = useRouter()
   const [error, setError] = useState<string | undefined>(undefined)
-  const params = useParams()
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    setError(undefined)
-  }, [])
-
-  useEffect(() => {
-    const hash = window.location.hash.substring(1)
-    console.log('Hash: ', hash)
-    const searchParams = new URLSearchParams(hash)
-    if (searchParams.get('error')) {
-      const errorDescription = searchParams.get('error_description')
-      const cleanedError = errorDescription?.split('%3A')[0].replace(/\+/g, ' ')
-      setError(cleanedError ?? undefined)
-      // setError(searchParams.get('error'))
-    } else {
-      if (error) {
-        setError(undefined)
-      }
-    }
-  }, [params, error, searchParams])
 
   const handleLogin = async () => {
     setError(undefined)
@@ -59,16 +38,6 @@ export default function Login() {
     if (error) {
       setError(error.message)
     }
-  }
-
-  const extendErrorMessage = (message: string) => {
-    if (message.includes('confirmation email has been sent')) {
-      return (
-        message +
-        ". \n\nBe sure to check your spam folder if you don't receive the email."
-      )
-    }
-    return message
   }
 
   return (
@@ -97,7 +66,7 @@ export default function Login() {
           </Button>
           {error && (
             <ErrorAlert
-              message={extendErrorMessage(error)}
+              message={error}
               retry={() => {
                 router.push('/login')
                 router.refresh()
@@ -105,6 +74,9 @@ export default function Login() {
               retryText='Reload'
             />
           )}
+          <Suspense fallback={<></>}>
+            <AuthErrorHandler />
+          </Suspense>
         </CardContent>
         <CardFooter>
           <p className='text-xs text-center text-muted-foreground w-full'>

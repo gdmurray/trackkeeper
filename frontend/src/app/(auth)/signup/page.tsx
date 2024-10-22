@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +16,7 @@ import { Music, AlertCircle } from 'lucide-react'
 import { SpotifyFilled } from '@ant-design/icons'
 import { scopes } from '@/lib/spotify/client'
 import { getBaseRedirectUri } from '@/lib/get-base-redirect-uri'
+import { AuthErrorHandler } from '@/components/auth/auth-error-handler'
 
 export default function SignUp() {
   const [error, setError] = useState<string | null>(null)
@@ -70,6 +71,16 @@ export default function SignUp() {
             <SpotifyFilled className='text-white mr-2' />
             Sign up with Spotify
           </Button>
+          {error && (
+            <Alert variant='destructive' className='mt-4 max-w-md'>
+              <AlertCircle className='h-4 w-4' />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <Suspense fallback={<></>}>
+            <AuthErrorHandler />
+          </Suspense>
         </CardContent>
         <CardFooter>
           <p className='text-xs text-center text-muted-foreground w-full'>
@@ -77,13 +88,6 @@ export default function SignUp() {
           </p>
         </CardFooter>
       </Card>
-      {error && (
-        <Alert variant='destructive' className='mt-4 max-w-md'>
-          <AlertCircle className='h-4 w-4' />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
     </div>
   )
 }
