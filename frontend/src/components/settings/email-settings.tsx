@@ -1,64 +1,66 @@
+import { SettingsResponse } from '@/app/api/settings/route'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import {
   Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
 } from '../ui/card'
-import { Switch } from '../ui/switch'
-import { Skeleton } from '../ui/skeleton'
-import { Button } from '../ui/button'
-import { SettingsResponse } from '@/app/api/settings/route'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { Form, FormLabel, FormField, FormItem, FormControl } from '../ui/form'
-import dayjs from 'dayjs'
-import { updateAnalysis } from './actions/updateAnalysis'
-import { ErrorAlert } from '../error-alert'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '../ui/form'
+import { updateEmailSettings } from './actions/updateEmailSettings'
 import { useMutation } from '@tanstack/react-query'
+import { Switch } from '../ui/switch'
+import { ErrorAlert } from '../error-alert'
+import { Button } from '../ui/button'
 import { Loader2 } from 'lucide-react'
+import { Skeleton } from '../ui/skeleton'
 import { useToast } from '@/hooks/use-toast'
-type AnalysisSettingsProps = {
-  settings: SettingsResponse
-}
-
-const analysisSettingsSchema = z.object({
-  snapshots_enabled: z.boolean(),
+const emailSettingsSchema = z.object({
+  suggestion_emails: z.boolean(),
 })
 
-type AnalysisSettingsFormValues = z.infer<typeof analysisSettingsSchema>
+type EmailSettingsFormValues = z.infer<typeof emailSettingsSchema>
 
-export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
+export function EmailSettings({ settings }: { settings: SettingsResponse }) {
   const { toast } = useToast()
-  const form = useForm<AnalysisSettingsFormValues>({
-    resolver: zodResolver(analysisSettingsSchema),
+  const form = useForm<EmailSettingsFormValues>({
+    resolver: zodResolver(emailSettingsSchema),
     defaultValues: {
-      snapshots_enabled: settings.userSettings?.snapshots_enabled,
+      suggestion_emails: settings.userSettings?.suggestion_emails,
     },
   })
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: updateAnalysis,
+    mutationFn: updateEmailSettings,
     onSuccess: () => {
       toast({
-        title: 'Analysis settings updated',
+        title: 'Email preferences updated',
         duration: 5000,
       })
     },
   })
 
-  const onSubmit = async (data: AnalysisSettingsFormValues) => {
+  const onSubmit = async (data: EmailSettingsFormValues) => {
     mutate(data)
   }
 
   return (
     <Card className='max-w-3xl mx-auto'>
       <CardHeader>
-        <CardTitle>Analysis Settings</CardTitle>
+        <CardTitle>Email Preferences</CardTitle>
         <CardDescription>
-          Control how TrackKeeper analyzes your Spotify data
+          Control how TrackKeeper sends you emails
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -66,15 +68,23 @@ export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
           <CardContent className='space-y-4'>
             <FormField
               control={form.control}
-              name='snapshots_enabled'
+              name='suggestion_emails'
               render={({ field }) => (
                 <FormItem className='flex flex-row items-center justify-between space-y-0'>
-                  <FormLabel htmlFor='snapshots_enabled'>
-                    Snapshots Enabled
-                  </FormLabel>
+                  <div className='flex flex-col'>
+                    <FormLabel htmlFor='suggestion_emails'>
+                      Suggestion Emails
+                    </FormLabel>
+                    <FormDescription>
+                      Weekly emails with a summary of any removed songs and an
+                      analysis of whether TrackKeeper thinks that song was
+                      removed accidentally.
+                    </FormDescription>
+                  </div>
+
                   <FormControl>
                     <Switch
-                      id='snapshots_enabled'
+                      id='suggestion_emails'
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
@@ -82,14 +92,6 @@ export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
                 </FormItem>
               )}
             />
-            {settings.latestSnapshot != null && (
-              <span className='text-sm text-muted-foreground'>
-                Last Analysed at{' '}
-                {dayjs(settings.latestSnapshot.created_at).format(
-                  'h:mm A, MMMM D, YYYY'
-                )}
-              </span>
-            )}
           </CardContent>
           <CardFooter className='justify-between'>
             <div>
@@ -128,22 +130,26 @@ export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
   )
 }
 
-export function AnalysisSettingsLoading() {
+export function EmailSettingsLoading() {
   return (
     <Card className='max-w-3xl mx-auto'>
       <CardHeader>
-        <Skeleton className='h-6 w-3/4' />
-        <Skeleton className='h-4 w-full' />
+        <CardTitle>Email Preferences</CardTitle>
+        <CardDescription>
+          Control how TrackKeeper sends you emails
+        </CardDescription>
       </CardHeader>
       <CardContent className='space-y-4'>
-        <div className='flex items-center justify-between'>
-          <Skeleton className='h-4 w-1/3' />
+        <div className='flex flex-row items-center justify-between space-y-0'>
+          <div className='flex flex-col space-y-2'>
+            <Skeleton className='h-6 w-32' />
+            <Skeleton className='h-4 w-64' />
+          </div>
           <Skeleton className='h-6 w-12' />
         </div>
-        <Skeleton className='h-4 w-2/3' />
       </CardContent>
       <CardFooter className='justify-end'>
-        <Skeleton className='h-10 w-16' />
+        <Skeleton className='h-10 w-20' />
       </CardFooter>
     </Card>
   )

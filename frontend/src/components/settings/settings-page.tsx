@@ -15,6 +15,7 @@ import { TrackedPlaylistsLoading, TrackedPlaylists } from './tracked-playlists'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { EmailSettings, EmailSettingsLoading } from './email-settings'
 
 const settingsTabs = {
   general: 'general',
@@ -106,6 +107,18 @@ export const SettingsPage = ({ activeTab }: { activeTab: SettingsTab }) => {
               </>
             )}
           </div>
+        </TabsContent>
+        <TabsContent value='email'>
+          {isLoading ? (
+            <EmailSettingsLoading />
+          ) : error ? (
+            <ErrorAlert
+              message={error.message ?? 'An unknown error occurred'}
+              retry={refetch}
+            />
+          ) : (
+            <EmailSettings settings={data!.settings} />
+          )}
         </TabsContent>
         <TabsContent value='account'>
           <div className='space-y-8'>

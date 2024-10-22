@@ -24,6 +24,7 @@ import { updatePlaylistManagement } from './actions/updatePlaylistManagement'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { ErrorAlert } from '../error-alert'
+import { useToast } from '@/hooks/use-toast'
 
 const persistenceOptions = [
   { label: 'Forever', value: 'forever' },
@@ -52,6 +53,7 @@ type PlaylistManagementProps = {
 }
 
 export function PlaylistManagement({ settings }: PlaylistManagementProps) {
+  const { toast } = useToast()
   const form = useForm<PlaylistManagementFormValues>({
     resolver: zodResolver(playlistManagementSchema),
     defaultValues: {
@@ -64,6 +66,12 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: updatePlaylistManagement,
+    onSuccess: () => {
+      toast({
+        title: 'Playlist management updated',
+        duration: 5000,
+      })
+    },
   })
 
   const onSubmit = (data: PlaylistManagementFormValues) => {

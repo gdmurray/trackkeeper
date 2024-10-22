@@ -87,6 +87,7 @@ export async function GET(request: Request) {
             .insert({
               user_id: user.id,
               playlist_name: 'Liked Songs',
+              removed_playlist_name: 'Recently Removed',
               playlist_id: 'liked_songs',
               liked_songs: true,
               active: true,

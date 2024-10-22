@@ -23,8 +23,9 @@ export default function Error({
     <div className='flex flex-col items-center justify-center min-h-screen bg-background text-foreground container mx-auto'>
       <h1 className='text-4xl font-bold mb-4'>Oops! Something went wrong</h1>
       <p className='text-xl mb-8 text-muted-foreground max-w-lg'>
-        {error.message ??
-          "We're sorry, but an error occurred while processing your request."}
+        {error.message
+          ? decodeURIComponent(error.message)
+          : "We're sorry, but an error occurred while processing your request."}
       </p>
       <div className='flex space-x-4'>
         {error?.digest === SPOTIFY_APP_AUTHORIZATION_DIGEST &&
@@ -36,7 +37,7 @@ export default function Error({
           </Button>
         )}
 
-        <Button onClick={() => router.push('/')} variant='outline'>
+        <Button onClick={() => router.replace('/')} variant='outline'>
           Go to homepage
         </Button>
       </div>

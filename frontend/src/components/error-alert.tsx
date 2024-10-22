@@ -15,9 +15,9 @@ export const ErrorAlert = ({
   retryText = 'Retry',
 }: Props) => (
   <Alert variant='destructive'>
-    <AlertCircle className='h-4 w-4' />
-    <AlertTitle>{title}</AlertTitle>
-    <AlertDescription>{message}</AlertDescription>
+    <AlertCircle className='h-4 w-4 !text-red-500' />
+    <AlertTitle className='text-red-500 font-semibold'>{title}</AlertTitle>
+    <AlertDescription className='text-red-500'>{message}</AlertDescription>
     <div className='flex justify-end'>
       {retry && (
         <Button variant='destructive' size='sm' onClick={retry}>

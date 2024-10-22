@@ -30,6 +30,7 @@ import { ScrollArea } from '../ui/scroll-area'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateTrackedPlaylists } from './actions/updateTrackedPlaylists'
 import { ErrorAlert } from '../error-alert'
+import { useToast } from '@/hooks/use-toast'
 
 type TrackedPlaylistsProps = {
   settings: SettingsResponse
@@ -51,6 +52,7 @@ export function TrackedPlaylists({
   playlists,
   settings,
 }: TrackedPlaylistsProps) {
+  const { toast } = useToast()
   const form = useForm<z.infer<typeof trackedPlaylistSchema>>({
     resolver: zodResolver(trackedPlaylistSchema),
     defaultValues: settings.trackedPlaylists.reduce(
@@ -77,6 +79,10 @@ export function TrackedPlaylists({
     mutationFn: updateTrackedPlaylists,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] })
+      toast({
+        title: 'Tracked playlists updated',
+        duration: 5000,
+      })
     },
   })
 

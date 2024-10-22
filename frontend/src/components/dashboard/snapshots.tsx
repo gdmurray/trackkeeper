@@ -16,6 +16,7 @@ import dayjs from 'dayjs'
 import { ErrorAlert } from '../error-alert'
 import { SnapshotsResponse } from '@/app/api/snapshots/route'
 import Link from 'next/link'
+import { Button } from '../ui/button'
 
 async function fetchSnapshots(): Promise<SnapshotsResponse> {
   const res = await fetch('/api/snapshots')
@@ -85,6 +86,11 @@ function EmptyState() {
       <p className='text-center text-muted-foreground'>
         No snapshots available yet.
       </p>
+      <Button variant='outline' asChild>
+        <Link href='/settings/playlists'>
+          Click here to configure snapshots.
+        </Link>
+      </Button>
     </SnapshotsCard>
   )
 }
