@@ -26,8 +26,6 @@ export async function GET() {
     )
   }
 
-  console.log('User: ', user)
-
   let userSettings = null
   const { data: userSettingsData, error: userSettingsError } = await supabase
     .from('User Settings')

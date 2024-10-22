@@ -25,8 +25,6 @@ export async function GET() {
       )
     }
 
-    console.log('User: ', user, user.id)
-
     const { data, error } = await supabase
       .from('Library Snapshots')
       .select(
@@ -40,7 +38,7 @@ export async function GET() {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
-    console.log('Data: ', data)
+
     return NextResponse.json(
       {
         data,

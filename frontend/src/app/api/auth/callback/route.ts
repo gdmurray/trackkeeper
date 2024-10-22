@@ -39,7 +39,7 @@ export async function GET(request: Request) {
             }
           )
         if (insertError) {
-          console.error('Error inserting Spotify Access token:', insertError)
+          console.error('Error upserting Spotify Access token:', insertError)
         }
 
         const { data: userSettings, error: userSettingsError } = await supabase
