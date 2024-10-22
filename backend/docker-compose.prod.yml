@@ -3,18 +3,12 @@ version: '3.8'
 services:
   web:
     image: gdmurray/trackkeeper:latest
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     environment:
       - REDIS_URL=/run/secrets/redis_url
-    secrets:
-      - spotify_client_id
-      - spotify_client_secret
-      - supabase_url
-      - supabase_key
-      - redis_url
-      - flower_user
-      - flower_password
     deploy:
       replicas: 1
     depends_on:
@@ -25,14 +19,8 @@ services:
     command: celery -A app.core.celery_app worker -Q default,cron_tasks --loglevel=info --max-tasks-per-child=2
     environment:
       - REDIS_URL=/run/secrets/redis_url
-    secrets:
-      - spotify_client_id
-      - spotify_client_secret
-      - supabase_url
-      - supabase_key
-      - redis_url
-      - flower_user
-      - flower_password
+    env_file:
+      - .env
     deploy:
       replicas: 2
     depends_on:
@@ -43,14 +31,8 @@ services:
     command: celery -A app.core.celery_app beat --loglevel=info
     environment:
       - REDIS_URL=/run/secrets/redis_url
-    secrets:
-      - spotify_client_id
-      - spotify_client_secret
-      - supabase_url
-      - supabase_key
-      - redis_url
-      - flower_user
-      - flower_password
+    env_file:
+      - .env
     deploy:
       replicas: 1
     depends_on:
@@ -70,33 +52,10 @@ services:
       - REDIS_URL=/run/secrets/redis_url
       - FLOWER_USER=/run/secrets/flower_user
       - FLOWER_PASSWORD=/run/secrets/flower_password
-    secrets:
-      - spotify_client_id
-      - spotify_client_secret
-      - supabase_url
-      - supabase_key
-      - redis_url
-      - flower_user
-      - flower_password
+    env_file:
+      - .env
     deploy:
       replicas: 1
     depends_on:
       - redis
       - celery_worker
-
-secrets:
-  spotify_client_id:
-    external: true
-  spotify_client_secret:
-    external: true
-  supabase_url:
-    external: true
-  supabase_key:
-    external: true
-  redis_url:
-    external: true
-  flower_user:
-    external: true
-  flower_password:
-    external: true
-
