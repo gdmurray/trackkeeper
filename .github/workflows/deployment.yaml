@@ -67,7 +67,7 @@ jobs:
           key: "${{ secrets.SSH_PRIVATE_KEY }}"
           script: |
             echo "Creating .env file"
-            cat > ~/trackkeeper/.env << EOF
+            cat > ~/trackkeeper/backend/.env << EOF
             SUPABASE_URL=${{ secrets.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
             FLOWER_USER=greg

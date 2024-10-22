@@ -1,6 +1,6 @@
 from celery import Celery
 from app.core.config import settings
-
+from celery.schedules import crontab
 celery_app = Celery("app")
 # celery_app.config_from_object('app.core.celery_config')
 celery_app.autodiscover_tasks(['app.tasks'])
@@ -17,9 +17,13 @@ celery_app.conf.task_routes = {
 }
 
 celery_app.conf.beat_schedule = {
-    # "update-spotify-data-every-minute": {
-    #     "task": "app.tasks.cron_tasks.queue_user_tasks",
-    #     "schedule": 60.0, #43200.0,
-    # }
+    "update-spotify-data-every-12-hours": {
+        "task": "app.tasks.cron_tasks.queue_user_tasks",
+        "schedule": crontab(minute=0, hour='0,12'),
+    },
+    "weekly-suggestions-friday-9am": {
+        "task": "app.tasks.cron_tasks.weekly_suggestions",
+        "schedule": crontab(minute=0, hour=9, day_of_week=5),
+    }
 }
 
