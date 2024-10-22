@@ -83,7 +83,7 @@ jobs:
             cd ~/trackkeeper
 
             eval "$(ssh-agent -s)"
-            ssh-add ~/.ssh/mma-oracle-github-deploy-key
+            ssh-add ~/.ssh/trackkeeper-github-deploy-key
             git reset --hard HEAD
             git pull origin main
 
