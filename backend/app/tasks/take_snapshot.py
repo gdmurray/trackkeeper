@@ -8,11 +8,25 @@ from typing import Optional
 from requests import HTTPError
 from app.core.celery_app import celery_app
 from app.db.supabase import supabase
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from app.services.spotify_service import SpotifyService
 from app.tasks.diff_snapshots import diff_snapshots
 from celery.exceptions import MaxRetriesExceededError
 from app.models.spotify_access import SpotifyAccess
+
+def calculate_next_snapshot_date(song_count: int) -> datetime:
+    """Calculate the next snapshot date based on the song count"""
+    now = datetime.now(timezone.utc)
+    if song_count < 1000:
+        return now
+    elif song_count < 2000:
+        return now + timedelta(days=1)
+    elif song_count < 4000:
+        return now + timedelta(days=2)
+    elif song_count < 6000:
+        return now + timedelta(days=3)
+    else:
+        return now + timedelta(days=4)
 
 @celery_app.task(bind=True, max_retries=3)
 def take_snapshot(self, user_id: str, playlist_id: int, spotify_playlist_id: str, spotify_playlist_name: str):
