@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - Execute SSH Commands
+      - name: Execute SSH Commands
         uses: appleboy/ssh-action@master
         with:
           host: "${{ secrets.SSH_HOST }}"
