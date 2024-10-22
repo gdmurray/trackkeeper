@@ -28,12 +28,13 @@ jobs:
           username: gdmurray
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Cache Python Dependencies
+      - name: Cache Docker layers
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-buildx-
+          key: ${{ runner.os }}-buildx-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
@@ -43,9 +44,8 @@ jobs:
           context: backend
           file: backend/Dockerfile
           platforms: linux/arm64
-          build-args: BUILDKIT_INLINE_CACHE=1
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
         id: docker_build
 
       - name: Move Docker Cache
@@ -94,4 +94,4 @@ jobs:
 
             # Interpolate .env file and deploy the stack
             # The <(...) syntax creates a temporary file from the output of docker-compose config which docker stack deploy can use
-            docker stack deploy -c <(docker-compose -f docker-compose.prod.yml config | sed -E 's/published: "([0-9]+)"/published: \1/' | sed '/^name: trackkeeper/d') trackkeeper
+            docker stack deploy -c <(docker-compose -f docker-compose.prod.yml config | sed -E 's/published: "([0-9]+)"/published: \1/' | sed '/^name:/d') trackkeeper

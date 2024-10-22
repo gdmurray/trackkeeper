@@ -12,6 +12,7 @@ export async function GET(request: Request) {
 
   console.log('REQUEST: ', request)
 
+  console.log('CODE: ', code)
   if (code) {
     const supabase = createServerClient()
     const {

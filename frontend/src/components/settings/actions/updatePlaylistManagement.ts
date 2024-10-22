@@ -1,5 +1,6 @@
 'use server'
 
+import { ServerFunctionResponse } from '@/lib/serverFunction'
 import { createServerClient } from '@/lib/supabase/server'
 
 type PlaylistManagementFormValues = {
@@ -15,7 +16,7 @@ type PlaylistManagementFormValues = {
 
 export async function updatePlaylistManagement(
   formData: PlaylistManagementFormValues
-) {
+): Promise<ServerFunctionResponse> {
   const supabase = createServerClient()
   const {
     data: { user },

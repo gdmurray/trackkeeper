@@ -2,6 +2,7 @@
 
 import { TablesInsert, TablesUpdate } from '@/lib/types/database.types'
 import { createServerClient } from '@/lib/supabase/server'
+import { ServerFunctionResponse } from '@/lib/serverFunction'
 
 // type TrackedPlaylist = Tables<'Tracked Playlists'>
 
@@ -10,7 +11,7 @@ type TrackedPlaylistUpdate = TablesUpdate<'Tracked Playlists'>
 
 export async function updateTrackedPlaylists(
   formData: (TrackedPlaylistInsert | TrackedPlaylistUpdate)[]
-) {
+): Promise<ServerFunctionResponse> {
   const supabase = createServerClient()
   const {
     data: { user },

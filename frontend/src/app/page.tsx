@@ -1,4 +1,4 @@
-import LandingPage from '@/components/landing-page'
+import LandingPage from '@/components/landing-page/landing-page'
 
 export const metadata = {
   title: 'TrackKeeper',

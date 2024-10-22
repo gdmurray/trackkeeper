@@ -8,19 +8,21 @@ import {
   RefreshCcw,
   Music,
 } from 'lucide-react'
-import { Button } from './ui/button'
-import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
+import { Button } from '../ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card'
 import Link from 'next/link'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from './ui/dropdown-menu'
+} from '../ui/dropdown-menu'
+import { AppErrorHandler } from './error-handler'
 
 export default function LandingPage() {
   return (
     <div className='flex flex-col min-h-screen'>
+      <AppErrorHandler />
       <header className='px-4 lg:px-6 h-14 flex items-center justify-between max-w-7xl mx-auto w-full bg-background'>
         <Link className='flex items-center justify-center' href='#'>
           <Music className='h-6 w-6 text-spotify' />

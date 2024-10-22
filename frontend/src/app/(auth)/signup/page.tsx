@@ -15,16 +15,19 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Music, AlertCircle } from 'lucide-react'
 import { SpotifyFilled } from '@ant-design/icons'
 import { scopes } from '@/lib/spotify/client'
+import { getBaseRedirectUri } from '@/lib/get-base-redirect-uri'
 
 export default function SignUp() {
   const [error, setError] = useState<string | null>(null)
   const supabase = createClientComponentClient()
 
   const handleSpotifySignUp = async () => {
+    const redirectUri = `${getBaseRedirectUri()}/api/auth/callback`
+    console.log('Redirect URI: ', redirectUri)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'spotify',
       options: {
-        redirectTo: `${location.origin}/api/auth/callback`,
+        redirectTo: redirectUri,
         scopes,
       },
     })

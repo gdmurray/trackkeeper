@@ -1,5 +1,6 @@
 'use server'
 
+import { ServerFunctionResponse } from '@/lib/serverFunction'
 import { createServerClient } from '@/lib/supabase/server'
 
 type DeleteUserDataFormData = {
@@ -23,12 +24,7 @@ type DeleteUserDataResult = {
   }
 }
 
-type Response = {
-  success: boolean
-  error?: string
-  status: number
-  data?: DeleteUserDataResult
-}
+type Response = ServerFunctionResponse<DeleteUserDataResult>
 
 export async function deleteUserData(
   formData: DeleteUserDataFormData

@@ -1,12 +1,15 @@
 'use server'
 
+import { ServerFunctionResponse } from '@/lib/serverFunction'
 import { createServerClient } from '@/lib/supabase/server'
 
 type UpdateAnalysisFormData = {
   snapshots_enabled: boolean
 }
 
-export async function updateAnalysis(formData: UpdateAnalysisFormData) {
+export async function updateAnalysis(
+  formData: UpdateAnalysisFormData
+): Promise<ServerFunctionResponse> {
   const supabase = createServerClient()
   const {
     data: { user },

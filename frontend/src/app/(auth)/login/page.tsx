@@ -16,6 +16,7 @@ import { SpotifyFilled } from '@ant-design/icons'
 import { useParams, useRouter } from 'next/navigation'
 import { ErrorAlert } from '@/components/error-alert'
 import { scopes } from '@/lib/spotify/client'
+import { getBaseRedirectUri } from '@/lib/get-base-redirect-uri'
 
 export default function Login() {
   const router = useRouter()
@@ -41,7 +42,7 @@ export default function Login() {
   const handleLogin = async () => {
     setError(undefined)
     const supabase = createClient()
-    const redirectUri = `${window.location.origin}/api/auth/callback`
+    const redirectUri = `${getBaseRedirectUri()}/api/auth/callback`
     console.log('Redirect URI: ', redirectUri)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'spotify',
