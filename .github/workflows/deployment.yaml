@@ -30,7 +30,6 @@ jobs:
       - name: Cache Python Dependencies
         uses: actions/cache@v4
         with:
-          path: backend/venv
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: ${{ runner.os }}-buildx-
