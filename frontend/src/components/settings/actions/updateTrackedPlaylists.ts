@@ -1,9 +1,9 @@
 'use server'
 
-import { Tables, TablesInsert, TablesUpdate } from '@/lib/types/database.types'
+import { TablesInsert, TablesUpdate } from '@/lib/types/database.types'
 import { createServerClient } from '@/lib/supabase/server'
 
-type TrackedPlaylist = Tables<'Tracked Playlists'>
+// type TrackedPlaylist = Tables<'Tracked Playlists'>
 
 type TrackedPlaylistInsert = TablesInsert<'Tracked Playlists'>
 type TrackedPlaylistUpdate = TablesUpdate<'Tracked Playlists'>
@@ -32,9 +32,14 @@ export async function updateTrackedPlaylists(
     (acc, playlist) => {
       if (playlist.id == null) {
         // const
-        const { id, ...rest } = playlist
+        const { id: _id, ...rest } = playlist
 
-        acc.added.push({ ...rest, user_id: user.id })
+        acc.added.push({
+          ...rest,
+          user_id: user.id,
+          playlist_id: playlist.playlist_id!,
+          playlist_name: playlist.playlist_name!,
+        })
       } else {
         acc.updated.push({ ...playlist, user_id: user.id })
       }

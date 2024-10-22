@@ -1,6 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
   // The `/auth/callback` route is required for the server-side auth flow implemented
@@ -27,12 +26,14 @@ export async function GET(request: Request) {
         const { error: insertError } = await supabase
           .from('Spotify Access')
           .upsert(
-            {
-              user_id: user.id,
-              access_token: provider_token,
-              refresh_token: provider_refresh_token,
-              expires_at: expiresAt,
-            },
+            [
+              {
+                user_id: user.id,
+                access_token: provider_token!,
+                refresh_token: provider_refresh_token!,
+                expires_at: expiresAt,
+              },
+            ],
             {
               onConflict: 'user_id',
             }

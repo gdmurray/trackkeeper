@@ -18,6 +18,7 @@ import dayjs from 'dayjs'
 import { updateAnalysis } from './actions/updateAnalysis'
 import { ErrorAlert } from '../error-alert'
 import { useMutation } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 type AnalysisSettingsProps = {
   settings: SettingsResponse
 }
@@ -41,7 +42,7 @@ export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
   })
 
   const onSubmit = async (data: AnalysisSettingsFormValues) => {
-    await updateAnalysis(data)
+    mutate(data)
   }
 
   return (
@@ -104,8 +105,12 @@ export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
                 </Button>
               )}
 
-              <Button type='submit' disabled={!form.formState.isDirty}>
+              <Button
+                type='submit'
+                disabled={!form.formState.isDirty || isPending}
+              >
                 Save
+                {isPending && <Loader2 className='w-4 h-4 animate-spin' />}
               </Button>
             </div>
           </CardFooter>

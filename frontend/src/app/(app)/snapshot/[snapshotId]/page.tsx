@@ -62,7 +62,7 @@ export default function SnapshotPage({
     queryFn: () => fetchSnapshot(params.snapshotId),
   })
 
-  if (isLoading) return <LoadingComponent />
+  if (isLoading) return <SnapshotLoading />
   if (error) return <ErrorAlert message={error.message} retry={refetch} />
   if (!data) return <div>No data</div>
 
@@ -130,7 +130,7 @@ export default function SnapshotPage({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedSongs.map((track: any) => (
+            {paginatedSongs.map((track) => (
               <TableRow key={track.id} className='[&>td]:p-2'>
                 <TableCell className='w-10'>
                   <img
@@ -170,7 +170,7 @@ export default function SnapshotPage({
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
+                // disabled={currentPage === 1}
               />
             </PaginationItem>
             {[...Array(totalPages)]
@@ -198,7 +198,7 @@ export default function SnapshotPage({
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
-                disabled={currentPage === totalPages}
+                // disabled={currentPage === totalPages}
               />
             </PaginationItem>
           </PaginationContent>
@@ -208,7 +208,7 @@ export default function SnapshotPage({
   )
 }
 
-export function LoadingComponent() {
+function SnapshotLoading() {
   return (
     <Card>
       <CardHeader>

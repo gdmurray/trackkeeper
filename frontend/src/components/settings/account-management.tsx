@@ -29,8 +29,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Checkbox } from '../ui/checkbox'
 import { FormItem, FormField, FormControl, FormLabel, Form } from '../ui/form'
-import { useUser } from '../auth/user-provider'
-import { Input } from '../ui/input'
 import { useMutation } from '@tanstack/react-query'
 import { deleteUserData } from './actions/deleteUserData'
 import { ErrorAlert } from '../error-alert'
@@ -41,7 +39,9 @@ type AccountManagementProps = {
 }
 
 // TODO: MAnage what we delete, theres some cascading and new changes with the tracked playlists table
-export function AccountManagement({ settings }: AccountManagementProps) {
+export function AccountManagement({
+  settings: _settings,
+}: AccountManagementProps) {
   const [isDeleteDataDialogOpen, setIsDeleteDataDialogOpen] = useState(false)
   const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] =
     useState(false)
@@ -264,10 +264,12 @@ type DeleteAccountDialogProps = {
   onSuccess: () => void
 }
 // TODO: Implement this
-const DeleteAccountDialog = ({ onSuccess }: DeleteAccountDialogProps) => {
-  const { mutate, isPending, error } = useMutation({
-    // mutationFn: () => deleteAccount(),
-  })
+const DeleteAccountDialog = ({
+  onSuccess: _onSuccess,
+}: DeleteAccountDialogProps) => {
+  // const { mutate, isPending, error } = useMutation({
+  //   // mutationFn: () => deleteAccount(),
+  // })
   return (
     <DialogContent>
       <DialogHeader>

@@ -7,8 +7,6 @@ import {
   CardContent,
   CardFooter,
 } from '../ui/card'
-import { Input } from '../ui/input'
-import { Switch } from '../ui/switch'
 import { Skeleton } from '../ui/skeleton'
 import { SettingsResponse } from '@/app/api/settings/route'
 import { useForm } from 'react-hook-form'

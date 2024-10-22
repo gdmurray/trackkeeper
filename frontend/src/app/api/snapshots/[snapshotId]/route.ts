@@ -8,6 +8,7 @@ type Track = {
   id: string
   added_at: string
   album: string
+  artist: string
   image: string
   name: string
 }

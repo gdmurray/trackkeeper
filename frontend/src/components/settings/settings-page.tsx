@@ -13,7 +13,7 @@ import {
 } from './playlist-management'
 import { TrackedPlaylistsLoading, TrackedPlaylists } from './tracked-playlists'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const settingsTabs = {

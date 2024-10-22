@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Button } from '../ui/button'
 import {
   Card,
@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem } from '../ui/form'
 import { SettingsResponse } from '@/app/api/settings/route'
 import { PlaylistResponse } from '@/app/api/settings/playlists/route'
 import * as z from 'zod'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '../ui/input'
 import {
@@ -213,7 +213,7 @@ export function TrackedPlaylists({
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  {/* @ts-ignore */}
+                                  {/* @ts-expect-error react-hook-form */}
                                   <Input {...field} />
                                 </FormControl>
                               </FormItem>

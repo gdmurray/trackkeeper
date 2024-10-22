@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '../ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card'
 import {
   TableHeader,
@@ -70,7 +69,7 @@ export function RecentlyDeleted() {
             <TableRow key={song.id} className='[&>td]:p-2'>
               <TableCell className='w-10'>
                 <img
-                  src={song.track.image}
+                  src={song.track.image ?? undefined}
                   width={40}
                   height={40}
                   alt={song.track.name ?? ''}
@@ -92,7 +91,7 @@ export function RecentlyDeleted() {
           <PaginationItem>
             <PaginationPrevious
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+              // disabled={currentPage === 1}
             />
           </PaginationItem>
           {[...Array(totalPages)].map((_, index) => (
@@ -110,7 +109,7 @@ export function RecentlyDeleted() {
               onClick={() =>
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
-              disabled={currentPage === totalPages}
+              // disabled={currentPage === totalPages}
             />
           </PaginationItem>
         </PaginationContent>

@@ -1,8 +1,6 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { User, Home, Cog, LogOut } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { Button } from '../ui/button'
 import {
   DropdownMenu,
@@ -14,16 +12,9 @@ import {
 import Link from 'next/link'
 import { useUser } from '../auth/user-provider'
 import { SpotifyFilled } from '@ant-design/icons'
-import { signout } from '@/app/(auth)/signout'
 
 export const UserDropdown = () => {
-  const router = useRouter()
   const { user } = useUser()
-
-  const handleSignout = async () => {
-    await signout()
-    router.push('/')
-  }
 
   return (
     <DropdownMenu>
