@@ -1,31 +1,36 @@
-version: '3.8'
-
 services:
   web:
     image: gdmurray/trackkeeper:latest
     env_file:
       - .env
     ports:
-      - "8000:8000"
+      - 8000:8000
     environment:
       - REDIS_URL=/run/secrets/redis_url
     deploy:
       replicas: 1
-    depends_on:
-      - redis
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
   celery_worker:
     image: gdmurray/trackkeeper:latest
-    command: celery -A app.core.celery_app worker -Q default,cron_tasks --loglevel=info --max-tasks-per-child=2
+    command: celery -A app.core.celery_app worker -Q default,cron_tasks
+      --loglevel=info --max-tasks-per-child=2
     environment:
       - REDIS_URL=/run/secrets/redis_url
     env_file:
       - .env
     deploy:
       replicas: 2
-    depends_on:
-      - redis
-
+    healthcheck:
+      test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
   celery_beat:
     image: gdmurray/trackkeeper:latest
     command: celery -A app.core.celery_app beat --loglevel=info
@@ -35,19 +40,29 @@ services:
       - .env
     deploy:
       replicas: 1
-    depends_on:
-      - redis
-
+    healthcheck:
+      test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
   redis:
     image: redis:7-alpine
     deploy:
       replicas: 1
-
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
   flower:
     image: gdmurray/trackkeeper:latest
-    command: celery -A app.core.celery_app flower --port=5555 --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD} --broker=${REDIS_URL} --broker_api=${REDIS_URL}
+    command: celery -A app.core.celery_app flower --port=5555
+      --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD} --broker=${REDIS_URL}
+      --broker_api=${REDIS_URL}
     ports:
-      - "5555:5555"
+      - 5555:5555
     environment:
       - REDIS_URL=/run/secrets/redis_url
       - FLOWER_USER=/run/secrets/flower_user
@@ -56,6 +71,9 @@ services:
       - .env
     deploy:
       replicas: 1
-    depends_on:
-      - redis
-      - celery_worker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5555"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
