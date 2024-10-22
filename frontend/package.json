@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write \"**/*.{tsx,ts,js}\"",
+    "format:check": "prettier --check \"**/*.{tsx,ts,js}\"",
     "generate:types": "supabase gen types typescript --project-id \"$(grep SUPABASE_PROJECT_ID .env | cut -d '=' -f2)\" > src/lib/types/database.types.ts"
   },
   "dependencies": {
@@ -47,9 +49,14 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/spotify-web-api-node": "^5.0.11",
-    "eslint": "^8",
+    "@typescript-eslint/eslint-plugin": "^8.11.0",
+    "@typescript-eslint/parser": "^8.11.0",
+    "eslint": "^8.57.1",
     "eslint-config-next": "14.2.15",
+    "eslint-plugin-react": "^7.37.1",
+    "eslint-plugin-react-hooks": "^5.0.0",
     "postcss": "^8",
+    "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
