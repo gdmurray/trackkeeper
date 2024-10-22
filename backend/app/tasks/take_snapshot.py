@@ -14,23 +14,37 @@ from app.tasks.diff_snapshots import diff_snapshots
 from celery.exceptions import MaxRetriesExceededError
 from app.models.spotify_access import SpotifyAccess
 
-def calculate_next_snapshot_date(song_count: int) -> datetime:
+def calculate_next_snapshot_date(last_snapshot_date: datetime, song_count: int) -> datetime:
     """Calculate the next snapshot date based on the song count"""
-    now = datetime.now(timezone.utc)
     if song_count < 1000:
-        return now
+        return last_snapshot_date
     elif song_count < 2000:
-        return now + timedelta(days=1)
+        return last_snapshot_date + timedelta(days=1)
     elif song_count < 4000:
-        return now + timedelta(days=2)
+        return last_snapshot_date + timedelta(days=2)
     elif song_count < 6000:
-        return now + timedelta(days=3)
+        return last_snapshot_date + timedelta(days=3)
     else:
-        return now + timedelta(days=4)
+        return last_snapshot_date + timedelta(days=4)
 
 @celery_app.task(bind=True, max_retries=3)
 def take_snapshot(self, user_id: str, playlist_id: int, spotify_playlist_id: str, spotify_playlist_name: str):
     print(f"Taking user library snapshot for user {user_id} and playlist {playlist_id} : {spotify_playlist_id} : {spotify_playlist_name}")
+
+    # Check if there's a previous snapshot and if it's too soon for a new one
+    previous_snapshot = supabase.table('Library Snapshots').select('*').eq('user_id', user_id).eq('playlist_id', playlist_id).order('created_at', desc=True).limit(1).execute()
+    
+    if previous_snapshot.data and len(previous_snapshot.data) > 0:
+        last_snapshot = previous_snapshot.data[0]
+        last_snapshot_date = datetime.fromisoformat(last_snapshot['created_at'])
+        print(f"Last snapshot date: {last_snapshot_date}")
+        next_snapshot_date = calculate_next_snapshot_date(last_snapshot_date, last_snapshot['song_count'])
+        print(f"Next snapshot date: {next_snapshot_date}")
+        if datetime.now(timezone.utc) < next_snapshot_date:
+            print(f"Skipping snapshot for user {user_id} and playlist {playlist_id} because it's too soon")
+            return
+
+
     spotify_access_result = supabase.table('Spotify Access').select('*').eq('user_id', user_id).order('created_at', desc=True).limit(1).execute()
     if not spotify_access_result or not spotify_access_result.data:
         print(f"Error fetching Spotify access for user {user_id}")
