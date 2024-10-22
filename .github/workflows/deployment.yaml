@@ -74,7 +74,7 @@ jobs:
             FLOWER_PASSWORD=${{ secrets.FLOWER_PASSWORD }}
             SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}
             SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
-            REDIS_URL=${{ secrets.REDIS_URL }}
+            REDIS_URL=redis://redis:6379
             RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
             EOF
 

@@ -62,7 +62,7 @@ services:
       replicas: 1
 
   flower:
-    image: your-registry/your-app:latest
+    image: gdmurray/trackkeeper:latest
     command: celery -A app.core.celery_app flower --port=5555 --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD} --broker=${REDIS_URL} --broker_api=${REDIS_URL}
     ports:
       - "5555:5555"
