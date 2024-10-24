@@ -5,8 +5,19 @@ services:
       - .env
     ports:
       - 8000:8000
+    networks:
+      - default
+      - backend
     deploy:
       replicas: 1
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       restart_policy:
         condition: any
         delay: 5s
@@ -32,6 +43,8 @@ services:
       - .env
     deploy:
       replicas: 2
+    networks:
+      - backend
     # healthcheck:
     #   test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
     #   interval: 30s
@@ -51,6 +64,8 @@ services:
       - .env
     deploy:
       replicas: 1
+    networks:
+      - backend
     # healthcheck:
     #   test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
     #   interval: 30s
@@ -75,6 +90,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+    networks:
+      - backend
   flower:
     image: gdmurray/trackkeeper:latest
     command: celery -A app.core.celery_app --broker=${REDIS_URL} flower --port=5555 --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
@@ -82,6 +99,9 @@ services:
       - 5555:5555
     env_file:
       - .env
+    networks:
+      - default
+      - backend
     deploy:
       replicas: 1
     # healthcheck:
@@ -95,3 +115,9 @@ services:
     #   options:
     #     loki-url: "${LOKI_URL}"
     #     loki-external-labels: "job=dockerswarm,environment=production,service=flower"
+
+networks:
+  default:
+    external:
+      name: "host"
+  backend:
