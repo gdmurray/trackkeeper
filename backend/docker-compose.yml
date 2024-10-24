@@ -15,6 +15,11 @@ services:
       - FLOWER_PASSWORD=${FLOWER_PASSWORD}
     depends_on:
       - redis
+    logging:
+      driver: loki
+      options:
+        loki-url: "${LOKI_URL}"
+        loki-external-labels: "job=dockerswarm,environment=production,service=web"
 
   celery_worker:
     build: .
@@ -29,6 +34,11 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+    logging:
+      driver: loki
+      options:
+        loki-url: "${LOKI_URL}"
+        loki-external-labels: "job=dockerswarm,environment=production,service=celery_worker"
 
   celery_beat:
     build: .
@@ -43,6 +53,12 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+    logging:
+      driver: loki
+      options:
+        loki-url: "${LOKI_URL}"
+        loki-external-labels: "job=dockerswarm,environment=production,service=celery_beat"
+
 
   redis:
     image: redis:7-alpine
@@ -62,6 +78,11 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+    logging:
+      driver: loki
+      options:
+        loki-url: "${LOKI_URL}"
+        loki-external-labels: "job=dockerswarm,environment=production,service=flower"
     depends_on:
       - redis
       - celery_worker

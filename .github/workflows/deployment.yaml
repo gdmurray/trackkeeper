@@ -76,6 +76,7 @@ jobs:
             SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
             REDIS_URL=redis://redis:6379
             RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+            LOKI_URL=${{ secrets.LOKI_URL }}
             EOF
 
             echo ".env file created with secrets."
