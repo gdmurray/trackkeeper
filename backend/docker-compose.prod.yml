@@ -9,17 +9,22 @@ services:
       - REDIS_URL=/run/secrets/redis_url
     deploy:
       replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 40s
-    logging:
-      driver: loki
-      options:
-        loki-url: "${LOKI_URL}"
-        loki-external-labels: "job=dockerswarm,environment=production,service=web"
+    # logging:
+    #   driver: loki
+    #   options:
+    #     loki-url: "${LOKI_URL}"
+    #     loki-external-labels: "job=dockerswarm,environment=production,service=web"
 
   celery_worker:
     image: gdmurray/trackkeeper:latest
@@ -37,11 +42,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    logging:
-      driver: loki
-      options:
-        loki-url: "${LOKI_URL}"
-        loki-external-labels: "job=dockerswarm,environment=production,service=celery_worker"
+    # logging:
+    #   driver: loki
+    #   options:
+    #     loki-url: "${LOKI_URL}"
+    #     loki-external-labels: "job=dockerswarm,environment=production,service=celery_worker"
 
   celery_beat:
     image: gdmurray/trackkeeper:latest
@@ -58,11 +63,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    logging:
-      driver: loki
-      options:
-        loki-url: "${LOKI_URL}"
-        loki-external-labels: "job=dockerswarm,environment=production,service=celery_beat"
+    # logging:
+    #   driver: loki
+    #   options:
+    #     loki-url: "${LOKI_URL}"
+    #     loki-external-labels: "job=dockerswarm,environment=production,service=celery_beat"
 
   redis:
     image: redis:7-alpine
@@ -97,8 +102,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    logging:
-      driver: loki
-      options:
-        loki-url: "${LOKI_URL}"
-        loki-external-labels: "job=dockerswarm,environment=production,service=flower"
+    # logging:
+    #   driver: loki
+    #   options:
+    #     loki-url: "${LOKI_URL}"
+    #     loki-external-labels: "job=dockerswarm,environment=production,service=flower"
