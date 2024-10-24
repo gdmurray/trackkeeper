@@ -28,6 +28,12 @@ async def test_suggestions():
     task = weekly_suggestions.delay()
     return {"message": "Task queued", "task_id": task.id}
 
+
+@app.get("/health")
+async def health_check():
+    return {"status": "success", "message": "Service is healthy"}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
