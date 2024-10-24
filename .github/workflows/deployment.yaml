@@ -77,6 +77,8 @@ jobs:
             REDIS_URL=redis://redis:6379
             RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
             LOKI_URL=${{ secrets.LOKI_URL }}
+            CELERY_BROKER_URL=redis://redis:6379
+            CELERY_RESULT_BACKEND=redis://redis:6379
             EOF
 
             echo ".env file created with secrets."
