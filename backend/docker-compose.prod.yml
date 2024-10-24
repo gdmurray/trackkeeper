@@ -30,8 +30,6 @@ services:
     image: gdmurray/trackkeeper:latest
     command: celery -A app.core.celery_app worker -Q default,cron_tasks
       --loglevel=info --max-tasks-per-child=2
-    environment:
-      - REDIS_URL=/run/secrets/redis_url
     env_file:
       - .env
     deploy:
@@ -51,8 +49,6 @@ services:
   celery_beat:
     image: gdmurray/trackkeeper:latest
     command: celery -A app.core.celery_app beat --loglevel=info
-    environment:
-      - REDIS_URL=/run/secrets/redis_url
     env_file:
       - .env
     deploy:
@@ -88,10 +84,6 @@ services:
       --broker_api=${REDIS_URL}
     ports:
       - 5555:5555
-    environment:
-      - REDIS_URL=/run/secrets/redis_url
-      - FLOWER_USER=/run/secrets/flower_user
-      - FLOWER_PASSWORD=/run/secrets/flower_password
     env_file:
       - .env
     deploy:
