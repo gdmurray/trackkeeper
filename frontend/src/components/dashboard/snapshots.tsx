@@ -17,6 +17,15 @@ import { ErrorAlert } from '../error-alert'
 import { SnapshotsResponse } from '@/app/api/snapshots/route'
 import Link from 'next/link'
 import { Button } from '../ui/button'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination'
+import { useState } from 'react'
 
 async function fetchSnapshots(): Promise<SnapshotsResponse> {
   const res = await fetch('/api/snapshots')
@@ -36,6 +45,9 @@ export function Snapshots() {
     queryFn: () => fetchSnapshots(),
   })
 
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
   if (isLoading) return <SnapshotsSkeleton />
   if (error)
     return (
@@ -48,6 +60,12 @@ export function Snapshots() {
   if (!snapshots || snapshots.data.length === 0) return <EmptyState />
 
   const { data } = snapshots
+
+  const paginatedSnapshots = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
+  const totalPages = Math.ceil(data.length / itemsPerPage)
   return (
     <SnapshotsCard>
       <Table>
@@ -59,7 +77,7 @@ export function Snapshots() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((snapshot) => (
+          {paginatedSnapshots.map((snapshot) => (
             <TableRow key={snapshot.id}>
               <TableCell>
                 <Link
@@ -75,6 +93,34 @@ export function Snapshots() {
           ))}
         </TableBody>
       </Table>
+      <Pagination className='mt-4 justify-end'>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              // disabled={currentPage === 1}
+            />
+          </PaginationItem>
+          {[...Array(totalPages)].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                onClick={() => setCurrentPage(index + 1)}
+                isActive={currentPage === index + 1}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              // disabled={currentPage === totalPages}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </SnapshotsCard>
   )
 }
@@ -91,7 +137,7 @@ function EmptyState() {
           Click here to configure snapshots.
         </Link>
       </Button>
-      <div className='relative'>
+      {/* <div className='relative'>
         <div className='absolute inset-0 flex items-center'>
           <span className='w-full border-t' />
         </div>
@@ -99,7 +145,7 @@ function EmptyState() {
           <span className='bg-background px-2 text-muted-foreground'>OR</span>
         </div>
       </div>
-      <Button variant='default'>Create Snapshot</Button>
+      <Button variant='default'>Create Snapshot</Button> */}
     </SnapshotsCard>
   )
 }

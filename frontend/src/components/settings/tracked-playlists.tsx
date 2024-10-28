@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Button } from '../ui/button'
 import {
   Card,
@@ -40,7 +40,7 @@ type TrackedPlaylistsProps = {
 
 const trackedPlaylistSchema = z.record(
   z.object({
-    id: z.number().nullable(),
+    id: z.number().nullable().optional(),
     playlist_name: z.string(),
     active: z.boolean(),
     playlist_id: z.string(),
@@ -95,6 +95,25 @@ export function TrackedPlaylists({
     mutate(payload)
   }
 
+  const onUncheckedChange = useCallback(
+    (checked: boolean, playlist: SpotifyApi.PlaylistObjectSimplified) => {
+      if (checked) {
+        // Use setTimeout to move state update outside render cycle
+        setTimeout(() => {
+          form.setValue(playlist.id, {
+            id: null,
+            playlist_name: playlist.name,
+            active: true,
+            playlist_id: playlist.id,
+            removed_playlist_name: `Removed - ${playlist.name}`,
+            public: false,
+          })
+        }, 0)
+      }
+    },
+    [form]
+  )
+
   const sortedPlaylists = useMemo(() => {
     const playlistIdSet = new Set()
     return playlists
@@ -113,6 +132,14 @@ export function TrackedPlaylists({
         return 0
       })
   }, [trackedPlaylists, playlists])
+
+  console.log(
+    form.formState.isDirty,
+    form.formState.isValid,
+    form.formState.dirtyFields,
+    form.getValues(),
+    form.formState.errors
+  )
 
   return (
     <Card className='max-w-3xl mx-auto'>
@@ -308,18 +335,9 @@ export function TrackedPlaylists({
                       <Checkbox
                         id={playlist.id}
                         checked={false}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            form.setValue(playlist.id, {
-                              id: null,
-                              playlist_name: playlist.name,
-                              active: true,
-                              playlist_id: playlist.id,
-                              removed_playlist_name: `Removed - ${playlist.name}`,
-                              public: false,
-                            })
-                          }
-                        }}
+                        onCheckedChange={(checked) =>
+                          onUncheckedChange(checked as boolean, playlist)
+                        }
                       />
                       <Label htmlFor={playlist.id}>{playlist.name}</Label>
                     </div>
