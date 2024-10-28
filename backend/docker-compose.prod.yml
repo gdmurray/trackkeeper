@@ -1,6 +1,7 @@
 services:
   web:
     image: gdmurray/trackkeeper:latest
+    user: appuser
     env_file:
       - .env
     ports:
@@ -25,19 +26,21 @@ services:
         window: 120s
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
+      interval: 120s
       timeout: 10s
       retries: 5
-      start_period: 40s
+      start_period: 60s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
         tag: "{{.Name}}"
+        labels: "service=web"
 
   celery_worker:
     image: gdmurray/trackkeeper:latest
+    user: appuser
     command: celery -A app.core.celery_app worker -Q default,cron_tasks
       --loglevel=info --max-tasks-per-child=2
     env_file:
@@ -46,21 +49,22 @@ services:
       replicas: 2
     networks:
       - backend
-    # healthcheck:
-    #   test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 40s
+    healthcheck:
+      test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
+      interval: 120s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
         tag: "{{.Name}}"
-
+        labels: "service=celery_worker"
   celery_beat:
     image: gdmurray/trackkeeper:latest
+    user: appuser
     command: celery -A app.core.celery_app beat --loglevel=info
     env_file:
       - .env
@@ -80,7 +84,7 @@ services:
         max-size: "10m"
         max-file: "3"
         tag: "{{.Name}}"
-
+        labels: "service=celery_beat"
   redis:
     image: redis:7-alpine
     ports:
@@ -97,6 +101,7 @@ services:
       - backend
   flower:
     image: gdmurray/trackkeeper:latest
+    user: appuser
     command: celery -A app.core.celery_app --broker=${REDIS_URL} flower --port=5555 --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
     ports:
       - 5555:5555
@@ -107,18 +112,19 @@ services:
       - backend
     deploy:
       replicas: 1
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:5555"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 40s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-u", "${FLOWER_USER}:${FLOWER_PASSWORD}", "http://localhost:5555"]
+      interval: 120s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
         tag: "{{.Name}}"
+        labels: "service=flower"
 
 networks:
   default:
