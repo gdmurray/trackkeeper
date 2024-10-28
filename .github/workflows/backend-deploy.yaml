@@ -1,4 +1,4 @@
-name: Deploy Actions
+name: Backend Deploy
 
 on:
   push:
