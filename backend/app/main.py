@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 # from app.api.routes import spotify
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.core.celery_app import celery_app
-from app.tasks.cron_tasks import queue_user_tasks, weekly_suggestions
 
 # TODO: Implement Flower UI with login + password
 # TODO: Check if auth from web app transfers over to python backend
@@ -11,22 +10,21 @@ from app.tasks.cron_tasks import queue_user_tasks, weekly_suggestions
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
+# Set up cors
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://trackkeeper.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # app.include_router(spotify.router, prefix="/api/spotify", tags=["spotify"])
 
 @app.get("/")
 async def root():
     print("Hello")
     return {"message": "Welcome to the FastAPI server"}
-
-@app.get("/test")
-async def test_queue_user_tasks():
-    task = queue_user_tasks.delay()
-    return {"message": "Task queued", "task_id": task.id}
-
-@app.get("/test_suggestions")
-async def test_suggestions():
-    task = weekly_suggestions.delay()
-    return {"message": "Task queued", "task_id": task.id}
 
 
 @app.get("/health")

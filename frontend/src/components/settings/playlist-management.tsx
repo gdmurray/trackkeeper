@@ -12,7 +12,14 @@ import { SettingsResponse } from '@/app/api/settings/route'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Form, FormLabel, FormField, FormItem, FormControl } from '../ui/form'
+import {
+  Form,
+  FormLabel,
+  FormField,
+  FormItem,
+  FormControl,
+  FormDescription,
+} from '../ui/form'
 import {
   Select,
   SelectTrigger,
@@ -22,9 +29,11 @@ import {
 } from '../ui/select'
 import { updatePlaylistManagement } from './actions/updatePlaylistManagement'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { CircleHelp, Loader2 } from 'lucide-react'
 import { ErrorAlert } from '../error-alert'
 import { useToast } from '@/hooks/use-toast'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
+import { Switch } from '../ui/switch'
 
 const persistenceOptions = [
   { label: 'Forever', value: 'forever' },
@@ -35,8 +44,6 @@ const persistenceOptions = [
 ]
 
 const playlistManagementSchema = z.object({
-  create_playlist: z.boolean(),
-  playlist_name: z.string().min(1, 'Playlist name is required'),
   playlist_persistence: z.enum([
     'forever',
     '30 days',
@@ -44,6 +51,7 @@ const playlistManagementSchema = z.object({
     '180 days',
     '1 year',
   ]),
+  remove_from_playlist: z.boolean(),
 })
 
 type PlaylistManagementFormValues = z.infer<typeof playlistManagementSchema>
@@ -53,6 +61,7 @@ type PlaylistManagementProps = {
 }
 
 export function PlaylistManagement({ settings }: PlaylistManagementProps) {
+  console.log('Settings: ', settings)
   const { toast } = useToast()
   const form = useForm<PlaylistManagementFormValues>({
     resolver: zodResolver(playlistManagementSchema),
@@ -61,6 +70,10 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
       // playlist_name: settings.userSettings?.playlist_name ?? 'Recently Removed',
       playlist_persistence: (settings.userSettings?.playlist_persistence ??
         'forever') as 'forever' | '30 days' | '90 days' | '180 days' | '1 year',
+      remove_from_playlist:
+        settings.userSettings?.remove_from_playlist != null
+          ? settings.userSettings.remove_from_playlist
+          : true,
     },
   })
 
@@ -81,10 +94,33 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
   return (
     <Card className='max-w-3xl mx-auto'>
       <CardHeader>
-        <CardTitle>Playlist Management</CardTitle>
-        <CardDescription>
-          Choose what you want to do with your recently deleted songs
-        </CardDescription>
+        <div className='flex flex-row justify-between items-start'>
+          <div className='flex flex-col'>
+            <CardTitle>Playlist Management</CardTitle>
+            <CardDescription>
+              Choose what you want to do with your recently deleted songs
+            </CardDescription>
+          </div>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button variant='outline' size='icon-circle'>
+                <CircleHelp className='h-4 w-4' />
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className='w-80'>
+              <div className='space-y-2'>
+                <h4 className='font-medium leading-none'>
+                  Playlist Management
+                </h4>
+                <p className='text-sm text-muted-foreground'>
+                  Configure how long songs remain in your Recently Removed
+                  playlist before being automatically removed. Choose from 30
+                  days up to 1 year, or keep them forever.
+                </p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -147,6 +183,31 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='remove_from_playlist'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between space-y-0'>
+                  <div className='flex flex-col'>
+                    <FormLabel htmlFor='remove_from_playlist'>
+                      Remove from Playlist
+                    </FormLabel>
+                    <FormDescription>
+                      Automatically remove songs from your Recently Removed
+                      playlist after a set amount of time.
+                    </FormDescription>
+                  </div>
+
+                  <FormControl>
+                    <Switch
+                      id='suggestion_emails'
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
                 </FormItem>
               )}

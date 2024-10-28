@@ -13,8 +13,6 @@ import Link from 'next/link'
 import { useUser } from '../auth/user-provider'
 import { SpotifyFilled } from '@ant-design/icons'
 
-const spotifyGeneratedIdRegex = /^[a-z0-9]{22,30}$/
-
 interface DetectionResult {
   isLikelyRandomId: boolean
   reason?: string

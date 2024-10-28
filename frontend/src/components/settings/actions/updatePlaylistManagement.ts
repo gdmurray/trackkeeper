@@ -4,8 +4,7 @@ import { ServerFunctionResponse } from '@/lib/serverFunction'
 import { createServerClient } from '@/lib/supabase/server'
 
 type PlaylistManagementFormValues = {
-  create_playlist: boolean
-  playlist_name: string
+  remove_from_playlist: boolean
   playlist_persistence:
     | 'forever'
     | '30 days'
@@ -31,11 +30,11 @@ export async function updatePlaylistManagement(
     }
   }
 
-  const { create_playlist, playlist_name, playlist_persistence } = formData
+  const { remove_from_playlist, playlist_persistence } = formData
 
   const { error } = await supabase
     .from('User Settings')
-    .update({ create_playlist, playlist_name, playlist_persistence })
+    .update({ remove_from_playlist, playlist_persistence })
     .eq('user_id', user.id)
 
   if (error) {

@@ -2,6 +2,7 @@ import time
 import json
 import gzip
 import spotipy
+import dateutil.parser
 
 from typing import Optional
 
@@ -36,7 +37,7 @@ def take_snapshot(self, user_id: str, playlist_id: int, spotify_playlist_id: str
     
     if previous_snapshot.data and len(previous_snapshot.data) > 0:
         last_snapshot = previous_snapshot.data[0]
-        last_snapshot_date = datetime.fromisoformat(last_snapshot['created_at'])
+        last_snapshot_date = dateutil.parser.parse(last_snapshot['created_at'])
         print(f"Last snapshot date: {last_snapshot_date}")
         next_snapshot_date = calculate_next_snapshot_date(last_snapshot_date, last_snapshot['song_count'])
         print(f"Next snapshot date: {next_snapshot_date}")

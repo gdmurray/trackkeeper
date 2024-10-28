@@ -20,8 +20,8 @@ export async function GET() {
   const spotifyId = user.user_metadata.provider_id
 
   const client = await getAuthenticatedUserClient()
-
   let user_playlists: SpotifyApi.PlaylistObjectSimplified[] = []
+
   let playlists = await client.getUserPlaylists()
   user_playlists = user_playlists.concat(playlists.body.items)
 

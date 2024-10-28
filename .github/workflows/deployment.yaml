@@ -70,13 +70,13 @@ jobs:
             cat > ~/trackkeeper/backend/.env << EOF
             SUPABASE_URL=${{ secrets.SUPABASE_URL }}
             SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
+            SUPABASE_JWT_SECRET="${{ secrets.SUPABASE_JWT_SECRET }}"
             FLOWER_USER=greg
             FLOWER_PASSWORD=${{ secrets.FLOWER_PASSWORD }}
             SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}
             SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
             REDIS_URL=redis://redis:6379
             RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
-            LOKI_URL=${{ secrets.LOKI_URL }}
             CELERY_BROKER_URL=redis://redis:6379
             CELERY_RESULT_BACKEND=redis://redis:6379
             EOF

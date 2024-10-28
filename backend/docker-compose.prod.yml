@@ -29,11 +29,12 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
-    # logging:
-    #   driver: loki
-    #   options:
-    #     loki-url: "${LOKI_URL}"
-    #     loki-external-labels: "job=dockerswarm,environment=production,service=web"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}"
 
   celery_worker:
     image: gdmurray/trackkeeper:latest
@@ -51,11 +52,12 @@ services:
     #   timeout: 10s
     #   retries: 3
     #   start_period: 40s
-    # logging:
-    #   driver: loki
-    #   options:
-    #     loki-url: "${LOKI_URL}"
-    #     loki-external-labels: "job=dockerswarm,environment=production,service=celery_worker"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}"
 
   celery_beat:
     image: gdmurray/trackkeeper:latest
@@ -72,11 +74,12 @@ services:
     #   timeout: 10s
     #   retries: 3
     #   start_period: 40s
-    # logging:
-    #   driver: loki
-    #   options:
-    #     loki-url: "${LOKI_URL}"
-    #     loki-external-labels: "job=dockerswarm,environment=production,service=celery_beat"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}"
 
   redis:
     image: redis:7-alpine
@@ -110,11 +113,12 @@ services:
     #   timeout: 10s
     #   retries: 3
     #   start_period: 40s
-    # logging:
-    #   driver: loki
-    #   options:
-    #     loki-url: "${LOKI_URL}"
-    #     loki-external-labels: "job=dockerswarm,environment=production,service=flower"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}"
 
 networks:
   default:

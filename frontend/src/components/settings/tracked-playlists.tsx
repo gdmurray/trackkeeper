@@ -25,12 +25,13 @@ import {
   SelectItem,
   SelectTrigger,
 } from '../ui/select'
-import { FolderLock, Globe, Loader2 } from 'lucide-react'
+import { CircleHelp, FolderLock, Globe, Loader2 } from 'lucide-react'
 import { ScrollArea } from '../ui/scroll-area'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateTrackedPlaylists } from './actions/updateTrackedPlaylists'
 import { ErrorAlert } from '../error-alert'
 import { useToast } from '@/hooks/use-toast'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
 
 type TrackedPlaylistsProps = {
   settings: SettingsResponse
@@ -125,6 +126,26 @@ export function TrackedPlaylists({
               Liked Songs is automatically tracked.
             </CardDescription>
           </div>
+          <HoverCard>
+            <HoverCardTrigger>
+              <Button variant='outline' size='icon-circle'>
+                <CircleHelp className='w-4 h-4' />
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent>
+              <div className='space-y-2'>
+                <h4 className='font-medium leading-none'>Tracked Playlists</h4>
+                <p className='text-sm text-muted-foreground'>
+                  This can be used to keep track of changes in playlists which
+                  Spotify updates itself, such as <b>Release Radar</b> and{' '}
+                  <b>On Repeat</b>.
+                  <br />
+                  Make sure to add those playlists to your liked playlists so
+                  that it appears in this list.
+                </p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
         </div>
       </CardHeader>
       <Form {...form}>
