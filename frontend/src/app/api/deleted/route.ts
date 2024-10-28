@@ -34,6 +34,7 @@ export async function GET() {
       playlist:"Tracked Playlists"(*)`
     )
     .eq('user_id', user.id)
+    .eq('active', true)
     .order('removed_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

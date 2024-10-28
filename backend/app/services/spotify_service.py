@@ -30,6 +30,10 @@ class SpotifyService:
         result = self.sp.user_playlist_create(user_id, tracked_playlist.removed_playlist_name, public=tracked_playlist.public, description=f"A list of all the tracks in {tracked_playlist.playlist_name} that have been removed. Managed by TrackKeeper.")
         print("Playlist Created: ", result)
         return result['id']
+    
+    def remove_tracks_from_playlist(self, playlist_id: str, track_ids: list[str]):
+        body = [{"uri": f"spotify:track:{tid}"} for tid in track_ids]
+        self.sp.playlist_remove_all_occurrences_of_items(playlist_id=playlist_id, items=body)
 
     def add_tracks_to_playlist(self, playlist_id: str, track_ids: list[str]):
         self.sp.playlist_add_items(playlist_id, track_ids)

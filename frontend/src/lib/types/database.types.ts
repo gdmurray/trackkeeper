@@ -44,6 +44,7 @@ export type Database = {
       }
       "Deleted Songs": {
         Row: {
+          active: boolean
           created_at: string
           id: number
           playlist_id: number
@@ -52,6 +53,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active?: boolean
           created_at?: string
           id?: number
           playlist_id: number
@@ -60,6 +62,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active?: boolean
           created_at?: string
           id?: number
           playlist_id?: number

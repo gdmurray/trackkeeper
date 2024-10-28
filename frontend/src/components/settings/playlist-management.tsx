@@ -165,7 +165,13 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
               name='playlist_persistence'
               render={({ field }) => (
                 <FormItem className='flex flex-row items-center justify-between space-y-0'>
-                  <FormLabel>Song Persistence</FormLabel>
+                  <div className='flex flex-col'>
+                    <FormLabel>Song Persistence</FormLabel>
+                    <FormDescription>
+                      How long should TrackKeeper store your removed songs from
+                      any of your playlists.
+                    </FormDescription>
+                  </div>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
@@ -197,8 +203,9 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
                       Remove from Playlist
                     </FormLabel>
                     <FormDescription>
-                      Automatically remove songs from your Recently Removed
-                      playlist after a set amount of time.
+                      Should TrackKeeper delete these songs from your Spotify
+                      playlists when the song expires (based on your song
+                      persistence setting).
                     </FormDescription>
                   </div>
 

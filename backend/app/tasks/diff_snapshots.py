@@ -8,28 +8,35 @@ from app.services.spotify_service import SpotifyService
 from app.models.spotify_access import SpotifyAccess
 from app.models.cached_tracks import CachedTrackInsert
 from app.models.tracked_playlists import TrackedPlaylist
+from app.tasks.check_song_expiry import check_song_expiry
 
 # This Function takes user_id, and playlist_id, which is the supabase integer id for tracked playlist
 @celery_app.task
 def diff_snapshots(user_id: str, spotify_user_id: str, playlist_id: int):
+    response = {}
     current_time = datetime.now(timezone.utc).isoformat()
     print(f"Diffing snapshots for user {user_id}")
-    # Fetch the latest two snapshots for the user
+    # Fetch the tracked playlist
     tracked_playlist_result = supabase.table('Tracked Playlists').select('*').eq('id', playlist_id).single().execute()
 
     # Check if tracked playlist exists
     if not tracked_playlist_result or not tracked_playlist_result.data:
         print(f"Error fetching tracked playlist for user {user_id}: {tracked_playlist_result}. Task ended.")
-        return
+        return {
+            "message": f"Error fetching tracked playlist for user {user_id}: {tracked_playlist_result}. Task ended."
+        }
     
     tracked_playlist = TrackedPlaylist(**tracked_playlist_result.data)
-    
+
+    # Fetch the latest two snapshots for the user    
     snapshots = supabase.table('Library Snapshots').select('*').eq('user_id', user_id).eq('playlist_id', playlist_id).order('created_at', desc=True).limit(2).execute()
 
     # Check if we have at least two snapshots
     if len(snapshots.data) < 2:
         print(f"Not enough snapshots for user {user_id} to perform diff. Task ended.")
-        return
+        return {
+            "message": f"Not enough snapshots for user {user_id} to perform diff. Task ended."
+        }
 
     # If we have enough snapshots, we can proceed with the diff
     latest_snapshot_row = snapshots.data[0]
@@ -37,7 +44,9 @@ def diff_snapshots(user_id: str, spotify_user_id: str, playlist_id: int):
 
     if latest_snapshot_row['snapshot_id'] is  None or previous_snapshot_row['snapshot_id'] is None:
         print(f"Snapshot IDs are None for user {user_id}. Task ended.")
-        return
+        return {
+            "message": f"Snapshot IDs are None for user {user_id}. Task ended."
+        }
     
     previous_snapshot = load_snapshot(previous_snapshot_row['snapshot_id'])
     if not previous_snapshot:
@@ -55,7 +64,9 @@ def diff_snapshots(user_id: str, spotify_user_id: str, playlist_id: int):
 
     if not removed_tracks_ids or len(removed_tracks_ids) == 0:
         print(f"No changes found for user {user_id}. Task ended.")
-        return
+        return {
+            "message": f"No changes found for user {user_id}. Task ended."
+        }
     
     cached_tracks_upserts: list[CachedTrackInsert] = [{
         'track_id': track['id'],
@@ -70,14 +81,18 @@ def diff_snapshots(user_id: str, spotify_user_id: str, playlist_id: int):
     cached_tracks_result = supabase.table('Cached Tracks').upsert(cached_tracks_upserts, on_conflict='track_id').execute()
     if not cached_tracks_result:
         print(f"Error upserting Cached Tracks: {cached_tracks_result}")
-        return
+        return {
+            "message": f"Error upserting Cached Tracks: {cached_tracks_result}"
+        }
     
     # Fetch Settings For User
     user_settings = supabase.table('User Settings').select('*').eq('user_id', user_id).single().execute()
 
     if not user_settings or not user_settings.data:
         print(f"Error fetching user settings for user {user_id}. Task ended.")
-        return
+        return {
+            "message": f"Error fetching user settings for user {user_id}. Task ended."
+        }
     
     spotify_access_result = supabase.table('Spotify Access').select('*').eq('user_id', user_id).order('created_at', desc=True).limit(1).execute()
     if not spotify_access_result or not spotify_access_result.data:
@@ -113,7 +128,9 @@ def diff_snapshots(user_id: str, spotify_user_id: str, playlist_id: int):
         
         if not created_playlist_id:
             print(f"Failed to create playlist for user {user_id} Task ended.")
-            return
+            return {
+                "message": f"Failed to create playlist for user {user_id} Task ended."
+            }
         supabase.table('Tracked Playlists').update({
             'removed_playlist_id': created_playlist_id
         }).eq('user_id', user_id).eq('id', tracked_playlist.id).execute()
@@ -122,7 +139,10 @@ def diff_snapshots(user_id: str, spotify_user_id: str, playlist_id: int):
     spotify_uris = [f"spotify:track:{track_id}" for track_id in list(removed_tracks_ids)]        
     spotify_service.add_tracks_to_playlist(playlist_id=removed_playlist_id, track_ids=spotify_uris)    
 
-    print(f"Found snapshots for diff: Latest {latest_snapshot_row['snapshot_id']}, Previous {previous_snapshot_row['snapshot_id']}")
+    check_song_expiry.apply_async(args=[user_id, playlist_id])
+    return {
+        "message": f"Found snapshots for diff: Latest {latest_snapshot_row['snapshot_id']}, Previous {previous_snapshot_row['snapshot_id']}"
+    }
 
 def load_snapshot(file_name) -> Optional[list[CachedTrackInsert]]:
     try:
