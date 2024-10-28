@@ -49,12 +49,12 @@ services:
       replicas: 2
     networks:
       - backend
-    healthcheck:
-      test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
-      interval: 120s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+    # healthcheck:
+    #   test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
+    #   interval: 120s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 60s
     logging:
       driver: "json-file"
       options:
