@@ -9,10 +9,10 @@ export async function GET(request: Request) {
   console.log('AUTH CALLBACK')
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const redirectPath = requestUrl.searchParams.get('redirect') || '/dashboard'
+  // console.log('REQUEST: ', request)
 
-  console.log('REQUEST: ', request)
-
-  console.log('CODE: ', code)
+  // console.log('CODE: ', code)
   if (code) {
     const supabase = createServerClient()
     const {
@@ -102,10 +102,11 @@ export async function GET(request: Request) {
           }
         }
       }
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL(redirectPath, request.url))
     }
   }
 
   // return the user to an error page with instructions
+  // TODO: Implement this error page
   return NextResponse.redirect(new URL('/auth-error', request.url))
 }

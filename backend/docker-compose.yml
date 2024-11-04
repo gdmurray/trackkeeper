@@ -6,6 +6,9 @@ services:
     user: appuser
     ports:
       - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
     environment:
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
@@ -15,13 +18,19 @@ services:
       - REDIS_URL=${REDIS_URL}
       - FLOWER_USER=${FLOWER_USER}
       - FLOWER_PASSWORD=${FLOWER_PASSWORD}
+      - TEST_USER_ID=${TEST_USER_ID}
+      - APP_URL=${APP_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
     depends_on:
       - redis
 
   celery_worker:
     build: .
     user: appuser
-    command: celery -A app.core.celery_app worker -Q default,cron_tasks --loglevel=info --max-tasks-per-child=2
+    command: watchmedo auto-restart --directory=/app --pattern=*.py --recursive -- celery -A app.core.celery_app worker -Q default,cron_tasks --loglevel=info --max-tasks-per-child=2
+    volumes:
+      - .:/app
     depends_on:
       - redis
     environment:
@@ -35,6 +44,10 @@ services:
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
       - CELERY_BROKER_URL=${REDIS_URL}
       - CELERY_RESULT_BACKEND=${REDIS_URL}
+      - TEST_USER_ID=${TEST_USER_ID}
+      - APP_URL=${APP_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
     healthcheck:
       test: ["CMD", "celery", "-A", "app.core.celery_app", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
       interval: 120s
@@ -45,7 +58,9 @@ services:
   celery_beat:
     build: .
     user: appuser
-    command: celery -A app.core.celery_app beat --loglevel=info
+    command: watchmedo auto-restart --directory=/app --pattern=*.py --recursive -- celery -A app.core.celery_app beat --loglevel=info
+    volumes:
+      - .:/app
     depends_on:
       - redis
     environment:
@@ -57,7 +72,10 @@ services:
       - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
-
+      - TEST_USER_ID=${TEST_USER_ID}
+      - APP_URL=${APP_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
   redis:
     image: redis:7-alpine
     ports:
@@ -80,6 +98,7 @@ services:
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
       - CELERY_BROKER_URL=${REDIS_URL}
       - CELERY_RESULT_BACKEND=${REDIS_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
     depends_on:
       - redis
       - celery_worker

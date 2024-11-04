@@ -93,34 +93,36 @@ export function Snapshots() {
           ))}
         </TableBody>
       </Table>
-      <Pagination className='mt-4 justify-end'>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              // disabled={currentPage === 1}
-            />
-          </PaginationItem>
-          {[...Array(totalPages)].map((_, index) => (
-            <PaginationItem key={index}>
-              <PaginationLink
-                onClick={() => setCurrentPage(index + 1)}
-                isActive={currentPage === index + 1}
-              >
-                {index + 1}
-              </PaginationLink>
+      {totalPages > 1 && (
+        <Pagination className='mt-4 justify-end'>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
             </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              // disabled={currentPage === totalPages}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            {[...Array(totalPages)].map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  onClick={() => setCurrentPage(index + 1)}
+                  isActive={currentPage === index + 1}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </SnapshotsCard>
   )
 }

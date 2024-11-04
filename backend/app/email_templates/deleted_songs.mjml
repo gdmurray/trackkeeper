@@ -1,0 +1,34 @@
+{% extends "base.mjml" %}
+
+{% block content %}
+<mj-text>
+  <h1 style="font-size: 24px; font-weight: bold;">Your Recently Removed Songs</h1>
+  <p>Here are the songs you've removed from your tracked playlists in the past week:</p>
+</mj-text>
+
+{% for song in songs %}
+<mj-wrapper padding="5px" background-color="{% if song.accident %}#fff3cd{% else %}#f8f9fa{% endif %}" border-radius="8px" border="1px solid #ddd">
+  <mj-section padding="0">
+    <mj-column>
+      <mj-text>
+        <h3 style="margin: 0; font-size: 18px;">{{ song.name }}</h3>
+        <p style="margin: 3px 0; font-size: 12px; color: #171717;">Artist: {{ song.artist }}</p>
+        <p style="margin: 3px 0; font-size: 12px; color: #171717;">Playlist: {{ song.playlist_name }}</p>
+        <p style="margin: 3px 0; font-size: 12px; color: #171717;">Removed on: {{ song.removed_at }}</p>
+        {% if song.accident %}
+        <p style="margin: 3px 0; font-weight: bold; font-size: 12px; color: #856404;">⚠️ We think this might have been removed accidentally</p>
+        {% endif %}
+      </mj-text>
+    </mj-column>
+  </mj-section>
+</mj-wrapper>
+{% endfor %}
+<mj-spacer height="16px" />
+
+<mj-button href="{{ frontend_url }}/dashboard" background-color="#1DB954"
+  border-radius="24px"
+  padding="12px 24px"
+  font-size="16px">
+  View Recently Deleted
+</mj-button>
+{% endblock %}

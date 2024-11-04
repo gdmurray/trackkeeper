@@ -112,12 +112,12 @@ services:
       - backend
     deploy:
       replicas: 1
-    healthcheck:
-      test: ["CMD", "curl", "-f", "-u", "${FLOWER_USER}:${FLOWER_PASSWORD}", "http://localhost:5555"]
-      interval: 120s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "-u", "${FLOWER_USER}:${FLOWER_PASSWORD}", "http://localhost:5555"]
+    #   interval: 120s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 60s
     logging:
       driver: "json-file"
       options:

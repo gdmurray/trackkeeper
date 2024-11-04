@@ -7,3 +7,11 @@ node_modules/
 frontend/.env
 backend/.env
 .vercel
+
+.vscode/
+
+backend/.cache
+
+**/__pycache__/
+
+backend/celerybeat-schedule

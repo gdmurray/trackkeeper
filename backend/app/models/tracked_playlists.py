@@ -3,6 +3,7 @@ from .base import Base, BaseInsert
 from pydantic import BaseModel
 from typing import Optional
 
+
 class TrackedPlaylist(Base):
     active: bool
     liked_songs: bool
@@ -14,6 +15,7 @@ class TrackedPlaylist(Base):
     removed_at: Optional[datetime] = None
     user_id: str
 
+
 class TrackedPlaylistInsert(BaseInsert):
     active: Optional[bool] = True
     liked_songs: Optional[bool] = False
@@ -23,6 +25,7 @@ class TrackedPlaylistInsert(BaseInsert):
     removed_playlist_id: Optional[str] = None
     removed_playlist_name: Optional[str] = None
     user_id: str
+
 
 class TrackedPlaylistUpdate(BaseModel):
     active: Optional[bool] = None
