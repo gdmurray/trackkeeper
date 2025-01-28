@@ -42,8 +42,8 @@ TrackKeeper is a web application that helps Spotify users keep track of their re
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/track-keeper.git
-cd track-keeper
+git clone https://github.com/gdmurray/trackkeeper
+cd trackkeeper
 ```
 
 2. Install dependencies
