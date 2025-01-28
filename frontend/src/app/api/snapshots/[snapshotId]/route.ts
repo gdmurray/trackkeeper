@@ -25,10 +25,11 @@ export type SnapshotDetailResponse = {
 const gunzipAsync = promisify(gunzip)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { snapshotId: string } }
+  props: { params: Promise<{ snapshotId: string }> }
 ) {
+  const params = await props.params
   console.log('Snapshot ID: ', params.snapshotId)
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Get the user's ID from the session
   const {

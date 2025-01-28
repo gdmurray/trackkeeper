@@ -13,7 +13,14 @@ import { SettingsResponse } from '@/app/api/settings/route'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Form, FormLabel, FormField, FormItem, FormControl } from '../ui/form'
+import {
+  Form,
+  FormLabel,
+  FormField,
+  FormItem,
+  FormControl,
+  FormDescription,
+} from '../ui/form'
 import dayjs from 'dayjs'
 import { updateAnalysis } from './actions/updateAnalysis'
 import { ErrorAlert } from '../error-alert'
@@ -68,10 +75,21 @@ export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
               control={form.control}
               name='snapshots_enabled'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between space-y-0'>
-                  <FormLabel htmlFor='snapshots_enabled'>
-                    Snapshots Enabled
-                  </FormLabel>
+                <FormItem className='flex flex-row items-start justify-between gap-x-2'>
+                  <div className='flex flex-col'>
+                    <FormLabel htmlFor='snapshots_enabled'>
+                      Snapshots Enabled
+                    </FormLabel>
+                    {settings.latestSnapshot != null && (
+                      <FormDescription className='text-sm text-muted-foreground'>
+                        Last Analysed at{' '}
+                        {dayjs(settings.latestSnapshot.created_at).format(
+                          'h:mm A, MMMM D, YYYY'
+                        )}
+                      </FormDescription>
+                    )}
+                  </div>
+
                   <FormControl>
                     <Switch
                       id='snapshots_enabled'
@@ -82,16 +100,8 @@ export function AnalysisSettings({ settings }: AnalysisSettingsProps) {
                 </FormItem>
               )}
             />
-            {settings.latestSnapshot != null && (
-              <span className='text-sm text-muted-foreground'>
-                Last Analysed at{' '}
-                {dayjs(settings.latestSnapshot.created_at).format(
-                  'h:mm A, MMMM D, YYYY'
-                )}
-              </span>
-            )}
           </CardContent>
-          <CardFooter className='justify-between'>
+          <CardFooter className='justify-between mt-4'>
             <div>
               {error && (
                 <ErrorAlert

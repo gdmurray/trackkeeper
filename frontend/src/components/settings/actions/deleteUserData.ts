@@ -29,7 +29,7 @@ type Response = ServerFunctionResponse<DeleteUserDataResult>
 export async function deleteUserData(
   formData: DeleteUserDataFormData
 ): Promise<Response> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

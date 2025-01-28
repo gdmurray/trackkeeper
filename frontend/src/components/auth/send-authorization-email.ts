@@ -17,7 +17,7 @@ export async function sendAuthorizationEmail(
   if (!AUTHOR_EMAIL) {
     throw new Error('AUTHOR_EMAIL is not set')
   }
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const rateLimitCookie = cookieStore.get('auth_email_rate_limit')
   let rateLimit = rateLimitCookie
     ? JSON.parse(rateLimitCookie.value)

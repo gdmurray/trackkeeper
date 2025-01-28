@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   // console.log('CODE: ', code)
   if (code) {
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const {
       error,
       data: { session },

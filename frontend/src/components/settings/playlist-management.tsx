@@ -164,7 +164,7 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
               control={form.control}
               name='playlist_persistence'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between space-y-0'>
+                <FormItem className='flex flex-row items-start justify-between gap-x-2'>
                   <div className='flex flex-col'>
                     <FormLabel>Song Persistence</FormLabel>
                     <FormDescription>
@@ -197,7 +197,7 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
               control={form.control}
               name='remove_from_playlist'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between space-y-0'>
+                <FormItem className='flex flex-row items-start justify-between gap-x-2'>
                   <div className='flex flex-col'>
                     <FormLabel htmlFor='remove_from_playlist'>
                       Remove from Playlist
@@ -220,7 +220,7 @@ export function PlaylistManagement({ settings }: PlaylistManagementProps) {
               )}
             />
           </CardContent>
-          <CardFooter className='justify-between'>
+          <CardFooter className='justify-between mt-4'>
             <div>
               {error && (
                 <ErrorAlert

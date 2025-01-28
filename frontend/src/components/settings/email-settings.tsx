@@ -70,7 +70,7 @@ export function EmailSettings({ settings }: { settings: SettingsResponse }) {
               control={form.control}
               name='suggestion_emails'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between space-y-0'>
+                <FormItem className='flex flex-row items-start justify-between gap-x-2'>
                   <div className='flex flex-col'>
                     <FormLabel htmlFor='suggestion_emails'>
                       Suggestion Emails
@@ -93,7 +93,7 @@ export function EmailSettings({ settings }: { settings: SettingsResponse }) {
               )}
             />
           </CardContent>
-          <CardFooter className='justify-between'>
+          <CardFooter className='justify-between mt-4'>
             <div>
               {error && (
                 <ErrorAlert

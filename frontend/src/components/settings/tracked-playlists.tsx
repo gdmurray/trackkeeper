@@ -347,7 +347,7 @@ export function TrackedPlaylists({
             </ScrollArea>
             {/* </div> */}
           </CardContent>
-          <CardFooter className='justify-between'>
+          <CardFooter className='justify-between mt-4'>
             <div>
               {error && (
                 <ErrorAlert

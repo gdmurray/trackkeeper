@@ -12,7 +12,7 @@ export type SnapshotsResponse = {
 
 export async function GET() {
   try {
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
 
     const {
       data: { user },

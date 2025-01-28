@@ -20,6 +20,10 @@ export async function updateSession(request: NextRequest) {
           response.cookies.set({
             name,
             value,
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+            maxAge: 60 * 60 * 24 * 30, // 30 days
             ...options,
           })
         },

@@ -13,7 +13,7 @@ export type SettingsResponse = {
 }
 
 export async function GET() {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },

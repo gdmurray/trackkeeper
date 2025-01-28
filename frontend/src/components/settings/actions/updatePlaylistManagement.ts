@@ -16,7 +16,7 @@ type PlaylistManagementFormValues = {
 export async function updatePlaylistManagement(
   formData: PlaylistManagementFormValues
 ): Promise<ServerFunctionResponse> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

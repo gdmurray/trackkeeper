@@ -10,7 +10,7 @@ type UpdateAnalysisFormData = {
 export async function updateAnalysis(
   formData: UpdateAnalysisFormData
 ): Promise<ServerFunctionResponse> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

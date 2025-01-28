@@ -12,7 +12,7 @@ type TrackedPlaylistUpdate = TablesUpdate<'Tracked Playlists'>
 export async function updateTrackedPlaylists(
   formData: (TrackedPlaylistInsert | TrackedPlaylistUpdate)[]
 ): Promise<ServerFunctionResponse> {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

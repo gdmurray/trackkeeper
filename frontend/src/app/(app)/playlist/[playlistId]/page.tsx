@@ -1,6 +1,6 @@
 'use client'
 
-import { SnapshotDetailResponse } from '@/app/api/snapshots/[snapshotId]/route'
+import { PlaylistDetailResponse } from '@/app/api/playlists/[playlistId]/route'
 import { ErrorAlert } from '@/components/error-alert'
 import {
   Card,
@@ -10,18 +10,14 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { useQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
-import { ExternalLink } from 'lucide-react'
-import Link from 'next/link'
-import { useState, use } from 'react'
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationLink,
+  PaginationEllipsis,
+  PaginationNext,
+} from '@/components/ui/pagination'
 import {
   Select,
   SelectContent,
@@ -29,53 +25,63 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '@/components/ui/table'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { ExternalLink } from 'lucide-react'
+import Link from 'next/link'
+import { useState, use } from 'react'
 
-export const dynamic = 'force-dynamic'
-
-async function fetchSnapshot(
-  snapshotId: string
-): Promise<SnapshotDetailResponse> {
-  const res = await fetch(`/api/snapshots/${snapshotId}`)
+async function fetchPlaylist(
+  playlistId: string
+): Promise<PlaylistDetailResponse> {
+  const res = await fetch(`/api/playlists/${playlistId}`)
   return res.json()
 }
 
-export default function SnapshotPage(props: {
-  params: Promise<{ snapshotId: string }>
+export default function PlaylistPage(props: {
+  params: Promise<{ playlistId: string }>
 }) {
   const params = use(props.params)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['snapshot', params.snapshotId],
-    queryFn: () => fetchSnapshot(params.snapshotId),
+    queryKey: ['playlist', params.playlistId],
+    queryFn: () => fetchPlaylist(params.playlistId),
   })
 
-  if (isLoading) return <SnapshotLoading />
+  console.log('Playlist data: ', data)
+
+  if (isLoading) return <PlaylistLoading />
   if (error) return <ErrorAlert message={error.message} retry={refetch} />
   if (!data) return <div>No data</div>
 
-  const paginatedSongs = data.tracks.slice(
+  const paginatedSnapshots = data.snapshots.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
 
-  const totalPages = Math.ceil(data.tracks.length / itemsPerPage)
+  const totalPages = Math.ceil(data.snapshots.length / itemsPerPage)
 
   const playlistUrl =
-    data.snapshot.tracked_playlist.playlist_id === 'liked_songs'
+    data.playlist.playlist_id === 'liked_songs'
       ? 'https://open.spotify.com/collection/tracks'
-      : `https://open.spotify.com/playlist/${data.snapshot.tracked_playlist.playlist_id}`
+      : `https://open.spotify.com/playlist/${data.playlist.playlist_id}`
 
   return (
     <Card>
@@ -89,13 +95,13 @@ export default function SnapshotPage(props: {
                 rel='noopener noreferrer'
                 className='hover:underline'
               >
-                {data.snapshot.tracked_playlist.playlist_name}
+                {data.playlist.playlist_name}
                 <ExternalLink className='w-4 h-4 inline-block ml-1' />
               </Link>
             </CardTitle>
             <CardDescription>
-              {data.tracks.length} tracks as of{' '}
-              {dayjs(data.snapshot.created_at).format('MMM D, YYYY h:mm A')}
+              {data.snapshots.length} snapshots as of{' '}
+              {dayjs(data.snapshots[0].created_at).format('MMM D, YYYY h:mm A')}
             </CardDescription>
           </div>
           <Select
@@ -122,44 +128,31 @@ export default function SnapshotPage(props: {
         <Table>
           <TableHeader>
             <TableRow className='[&>th]:px-2'>
-              <TableHead className='w-10' />
-              <TableHead>Title</TableHead>
-              <TableHead>Artist</TableHead>
-              <TableHead>Album</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Number of Songs</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedSongs.map((track) => (
-              <TableRow key={track.id} className='[&>td]:p-2'>
-                <TableCell className='w-10'>
-                  <img
-                    src={track.image}
-                    width={40}
-                    height={40}
-                    alt={track.name}
-                    className='w-5 h-5 rounded-full'
-                  />
-                </TableCell>
+            {paginatedSnapshots.map((snapshot) => (
+              <TableRow key={snapshot.id} className='[&>td]:p-2'>
                 <TableCell>
-                  <Link
-                    href={`spotify:track:${track.id}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='hover:underline'
-                    onClick={(e) => {
-                      e.preventDefault()
-                      window.open(
-                        `https://open.spotify.com/track/${track.id}`,
-                        '_blank'
-                      )
-                    }}
-                  >
-                    {track.name}{' '}
-                    <ExternalLink className='w-3 h-3 inline-block ml-1 mb-1' />
-                  </Link>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href={`/snapshot/${snapshot.id}`}
+                          className='hover:underline'
+                        >
+                          {dayjs(snapshot.created_at).format(
+                            'MMM D, YYYY h:mm A'
+                          )}
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>View Songs in Snapshot</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </TableCell>
-                <TableCell>{track.artist}</TableCell>
-                <TableCell>{track.album}</TableCell>
+                <TableCell>{snapshot.song_count}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -211,7 +204,7 @@ export default function SnapshotPage(props: {
   )
 }
 
-function SnapshotLoading() {
+function PlaylistLoading() {
   return (
     <Card>
       <CardHeader>
@@ -236,12 +229,6 @@ function SnapshotLoading() {
           <TableBody>
             {Array.from({ length: 10 }).map((_, index) => (
               <TableRow key={index} className='[&>td]:p-2'>
-                <TableCell className='w-10'>
-                  <Skeleton className='h-5 w-5 rounded-full' />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className='h-4 w-full' />
-                </TableCell>
                 <TableCell>
                   <Skeleton className='h-4 w-full' />
                 </TableCell>
@@ -254,7 +241,6 @@ function SnapshotLoading() {
         </Table>
         <div className='mt-4 flex justify-end items-center'>
           <div className='flex items-center'>
-            <Skeleton className='h-10 w-10 mr-2' />
             <Skeleton className='h-10 w-32 mx-2' />
             <Skeleton className='h-10 w-10 ml-2' />
           </div>

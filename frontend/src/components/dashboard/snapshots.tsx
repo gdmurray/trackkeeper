@@ -26,6 +26,12 @@ import {
   PaginationPrevious,
 } from '../ui/pagination'
 import { useState } from 'react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip'
 
 async function fetchSnapshots(): Promise<SnapshotsResponse> {
   const res = await fetch('/api/snapshots')
@@ -76,22 +82,43 @@ export function Snapshots() {
             <TableHead>Number of Songs</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {paginatedSnapshots.map((snapshot) => (
-            <TableRow key={snapshot.id}>
-              <TableCell>
-                <Link
-                  href={`/snapshot/${snapshot.id}`}
-                  className='hover:underline'
-                >
-                  {dayjs(snapshot.created_at).format('MMM D, YYYY h:mm A')}
-                </Link>
-              </TableCell>
-              <TableCell>{snapshot.tracked_playlist.playlist_name}</TableCell>
-              <TableCell>{snapshot.song_count}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+        <TooltipProvider>
+          <TableBody>
+            {paginatedSnapshots.map((snapshot) => (
+              <TableRow key={snapshot.id}>
+                <TableCell>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`/snapshot/${snapshot.id}`}
+                        className='hover:underline'
+                      >
+                        {dayjs(snapshot.created_at).format(
+                          'MMM D, YYYY h:mm A'
+                        )}
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>View Tracks in Snapshot</TooltipContent>
+                  </Tooltip>
+                </TableCell>
+                <TableCell>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        className='hover:underline'
+                        href={`/playlist/${snapshot.playlist_id}`}
+                      >
+                        {snapshot.tracked_playlist.playlist_name}
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>View Playlist History</TooltipContent>
+                  </Tooltip>
+                </TableCell>
+                <TableCell>{snapshot.song_count}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </TooltipProvider>
       </Table>
       {totalPages > 1 && (
         <Pagination className='mt-4 justify-end'>

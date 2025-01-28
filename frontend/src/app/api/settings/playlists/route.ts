@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 
 export type PlaylistResponse = SpotifyApi.PlaylistObjectSimplified[]
 export async function GET() {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },

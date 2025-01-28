@@ -7,7 +7,7 @@ type UpdateEmailSettingsFormData = {
 }
 
 export async function updateEmailSettings(data: UpdateEmailSettingsFormData) {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   const {
     data: { user },
